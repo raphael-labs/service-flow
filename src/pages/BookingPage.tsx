@@ -193,8 +193,8 @@ export default function BookingPage() {
         {/* Step 4: Done */}
         {step === 'done' && (
           <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-8 h-8 text-success" />
             </div>
             <h2 className="text-xl font-bold font-heading text-foreground">Agendamento Confirmado!</h2>
             <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
