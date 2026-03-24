@@ -65,6 +65,20 @@ export default function BookingPage() {
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    if (service) {
+      addAppointment({
+        id: crypto.randomUUID(),
+        clientName: name,
+        clientPhone: phone,
+        clientEmail: email,
+        serviceId: service.id,
+        serviceName: service.name,
+        date: selectedDate,
+        time: selectedTime,
+        duration: service.duration,
+        status: 'confirmed',
+      });
+    }
     setStep('done');
     toast.success('Agendamento confirmado!');
   };
