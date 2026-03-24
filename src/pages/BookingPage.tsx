@@ -198,8 +198,11 @@ export default function BookingPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Step 3: Info */}
         {step === 'info' && (
           <div className="space-y-5">
             <div className="flex items-center gap-2">
