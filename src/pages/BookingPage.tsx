@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import FormInput from '@/components/FormInput';
 import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAppointmentStore } from '@/stores/appointmentStore';
 
 // Mock data for public booking
 const mockServices = [
@@ -12,12 +13,28 @@ const mockServices = [
   { id: '4', name: 'Hidratação', duration: 45, price: 55 },
 ];
 
-const mockSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
+const allSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
+
+function timeToMinutes(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function slotConflicts(slotTime: string, serviceDuration: number, appointments: { time: string; duration: number }[]): boolean {
+  const slotStart = timeToMinutes(slotTime);
+  const slotEnd = slotStart + serviceDuration;
+  return appointments.some(a => {
+    const aStart = timeToMinutes(a.time);
+    const aEnd = aStart + a.duration;
+    return slotStart < aEnd && slotEnd > aStart;
+  });
+}
 
 type Step = 'service' | 'datetime' | 'info' | 'done';
 
 export default function BookingPage() {
   const { slug } = useParams();
+  const { appointments, addAppointment } = useAppointmentStore();
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -27,6 +44,13 @@ export default function BookingPage() {
   const [email, setEmail] = useState('');
 
   const service = mockServices.find(s => s.id === selectedService);
+
+  // Filter slots: only show times where the selected service fits without conflicts
+  const availableSlots = useMemo(() => {
+    if (!selectedDate || !service) return allSlots;
+    const dayAppointments = appointments.filter(a => a.date === selectedDate && a.status !== 'cancelled');
+    return allSlots.filter(time => !slotConflicts(time, service.duration, dayAppointments));
+  }, [selectedDate, service, appointments]);
 
   // Generate next 14 days
   const dates = useMemo(() => {
@@ -41,6 +65,20 @@ export default function BookingPage() {
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    if (service) {
+      addAppointment({
+        id: crypto.randomUUID(),
+        clientName: name,
+        clientPhone: phone,
+        clientEmail: email,
+        serviceId: service.id,
+        serviceName: service.name,
+        date: selectedDate,
+        time: selectedTime,
+        duration: service.duration,
+        status: 'confirmed',
+      });
+    }
     setStep('done');
     toast.success('Agendamento confirmado!');
   };
@@ -141,27 +179,30 @@ export default function BookingPage() {
             {selectedDate && (
               <div>
                 <p className="text-sm font-medium text-foreground mb-2">Horário</p>
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {mockSlots.map(time => (
-                    <button
-                      key={time}
-                      onClick={() => { setSelectedTime(time); setStep('info'); }}
-                      className={`py-2 rounded-lg text-sm font-medium transition-all ${
-                        selectedTime === time
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-card border border-border hover:border-primary/30 text-foreground'
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
+                {availableSlots.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">Nenhum horário disponível nesta data para este serviço.</p>
+                ) : (
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {availableSlots.map(time => (
+                      <button
+                        key={time}
+                        onClick={() => { setSelectedTime(time); setStep('info'); }}
+                        className={`py-2 rounded-lg text-sm font-medium transition-all ${
+                          selectedTime === time
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-card border border-border hover:border-primary/30 text-foreground'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
         )}
 
-        {/* Step 3: Info */}
         {step === 'info' && (
           <div className="space-y-5">
             <div className="flex items-center gap-2">
