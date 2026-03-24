@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import FormInput from '@/components/FormInput';
 import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAppointmentStore } from '@/stores/appointmentStore';
 
 // Mock data for public booking
 const mockServices = [
@@ -12,7 +13,22 @@ const mockServices = [
   { id: '4', name: 'Hidratação', duration: 45, price: 55 },
 ];
 
-const mockSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
+const allSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
+
+function timeToMinutes(time: string): number {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function slotConflicts(slotTime: string, serviceDuration: number, appointments: { time: string; duration: number }[]): boolean {
+  const slotStart = timeToMinutes(slotTime);
+  const slotEnd = slotStart + serviceDuration;
+  return appointments.some(a => {
+    const aStart = timeToMinutes(a.time);
+    const aEnd = aStart + a.duration;
+    return slotStart < aEnd && slotEnd > aStart;
+  });
+}
 
 type Step = 'service' | 'datetime' | 'info' | 'done';
 
