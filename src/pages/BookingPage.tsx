@@ -179,25 +179,25 @@ export default function BookingPage() {
             {selectedDate && (
               <div>
                 <p className="text-sm font-medium text-foreground mb-2">Horário</p>
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {mockSlots.map(time => (
-                    <button
-                      key={time}
-                      onClick={() => { setSelectedTime(time); setStep('info'); }}
-                      className={`py-2 rounded-lg text-sm font-medium transition-all ${
-                        selectedTime === time
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-card border border-border hover:border-primary/30 text-foreground'
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+                {availableSlots.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">Nenhum horário disponível nesta data para este serviço.</p>
+                ) : (
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {availableSlots.map(time => (
+                      <button
+                        key={time}
+                        onClick={() => { setSelectedTime(time); setStep('info'); }}
+                        className={`py-2 rounded-lg text-sm font-medium transition-all ${
+                          selectedTime === time
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-card border border-border hover:border-primary/30 text-foreground'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
         {/* Step 3: Info */}
         {step === 'info' && (
