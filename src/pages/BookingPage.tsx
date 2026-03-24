@@ -34,6 +34,7 @@ type Step = 'service' | 'datetime' | 'info' | 'done';
 
 export default function BookingPage() {
   const { slug } = useParams();
+  const { appointments, addAppointment } = useAppointmentStore();
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -43,6 +44,13 @@ export default function BookingPage() {
   const [email, setEmail] = useState('');
 
   const service = mockServices.find(s => s.id === selectedService);
+
+  // Filter slots: only show times where the selected service fits without conflicts
+  const availableSlots = useMemo(() => {
+    if (!selectedDate || !service) return allSlots;
+    const dayAppointments = appointments.filter(a => a.date === selectedDate && a.status !== 'cancelled');
+    return allSlots.filter(time => !slotConflicts(time, service.duration, dayAppointments));
+  }, [selectedDate, service, appointments]);
 
   // Generate next 14 days
   const dates = useMemo(() => {
