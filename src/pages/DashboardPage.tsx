@@ -1,10 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppointmentStore } from '@/stores/appointmentStore';
 import { useClientStore } from '@/stores/clientStore';
 import { useServiceStore } from '@/stores/serviceStore';
 import { useAuthStore } from '@/stores/authStore';
 import Card from '@/components/Card';
 import AppointmentCard from '@/components/AppointmentCard';
+import DashboardSkeleton from '@/components/DashboardSkeleton';
+import EmptyState from '@/components/EmptyState';
+import ErrorState from '@/components/ErrorState';
 import { CalendarDays, Users, Briefcase, TrendingUp } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -12,12 +15,24 @@ export default function DashboardPage() {
   const { clients, loadMock: loadClients } = useClientStore();
   const { services, loadMock: loadServices } = useServiceStore();
   const user = useAuthStore(s => s.user);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadAppointments();
-    loadClients();
-    loadServices();
+    setIsLoading(true);
+    try {
+      loadAppointments();
+      loadClients();
+      loadServices();
+    } catch {
+      setError('Erro ao carregar dados do dashboard.');
+    }
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
   }, []);
+
+  if (isLoading) return <DashboardSkeleton />;
+  if (error) return <ErrorState message={error} onRetry={() => { setError(null); loadAppointments(); loadClients(); loadServices(); setIsLoading(false); }} />;
 
   const todayStr = new Date().toISOString().split('T')[0];
   const todayAppointments = appointments.filter(a => a.date === todayStr);
@@ -36,7 +51,6 @@ export default function DashboardPage() {
         <p className="text-sm text-muted-foreground mt-1">Aqui está o resumo do seu dia</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(stat => (
           <Card key={stat.label}>
@@ -53,13 +67,16 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Today's appointments */}
       <div>
         <h2 className="text-lg font-semibold font-heading text-foreground mb-3">Agendamentos de Hoje</h2>
         {todayAppointments.length === 0 ? (
-          <Card>
-            <p className="text-sm text-muted-foreground text-center py-4">Nenhum agendamento para hoje</p>
-          </Card>
+          <div className="card-elevated">
+            <EmptyState
+              icon={CalendarDays}
+              title="Nenhum agendamento para hoje"
+              description="Vá para a Agenda para criar um novo agendamento."
+            />
+          </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {todayAppointments.map(a => (

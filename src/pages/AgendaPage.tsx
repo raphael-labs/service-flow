@@ -5,20 +5,30 @@ import { useServiceStore } from '@/stores/serviceStore';
 import CalendarGrid from '@/components/CalendarGrid';
 import Modal from '@/components/Modal';
 import ScheduleForm from '@/components/ScheduleForm';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import AgendaSkeleton from '@/components/AgendaSkeleton';
+import EmptyState from '@/components/EmptyState';
+import ErrorState from '@/components/ErrorState';
+import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { useNotification } from '@/hooks/useNotification';
 
 export default function AgendaPage() {
-  const { appointments, loadMock, addAppointment } = useAppointmentStore();
+  const { appointments, loadMock, addAppointment, loading, error } = useAppointmentStore();
   const { clients, loadMock: loadClients } = useClientStore();
   const { services, loadMock: loadServices } = useServiceStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState('08:00');
+  const [isLoading, setIsLoading] = useState(true);
+  const notify = useNotification();
 
   useEffect(() => {
+    setIsLoading(true);
     loadMock();
     loadClients();
     loadServices();
+    // Simulate loading
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
   }, []);
 
   const dateStr = currentDate.toISOString().split('T')[0];
@@ -46,6 +56,12 @@ export default function AgendaPage() {
     setModalOpen(false);
   };
 
+  const todayAppointments = appointments.filter(a => a.date === dateStr);
+
+  if (isLoading) return <AgendaSkeleton />;
+
+  if (error) return <ErrorState message={error} onRetry={() => { loadMock(); }} />;
+
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -68,6 +84,7 @@ export default function AgendaPage() {
           {weekDays.map(d => {
             const isSelected = d.toISOString().split('T')[0] === dateStr;
             const isToday = d.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+            const dayCount = appointments.filter(a => a.date === d.toISOString().split('T')[0]).length;
             return (
               <button
                 key={d.toISOString()}
@@ -82,6 +99,9 @@ export default function AgendaPage() {
               >
                 <span className="font-medium">{d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
                 <span className="text-lg font-bold mt-0.5">{d.getDate()}</span>
+                {dayCount > 0 && (
+                  <span className={`mt-0.5 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-primary-foreground' : 'bg-primary'}`} />
+                )}
               </button>
             );
           })}
@@ -90,11 +110,19 @@ export default function AgendaPage() {
 
       {/* Calendar Grid */}
       <div className="card-elevated p-4 overflow-auto max-h-[60vh]">
-        <CalendarGrid
-          date={dateStr}
-          appointments={appointments}
-          onSlotClick={handleSlotClick}
-        />
+        {todayAppointments.length === 0 && appointments.length === 0 ? (
+          <EmptyState
+            icon={CalendarDays}
+            title="Nenhum agendamento"
+            description="Clique em um horário ou no botão acima para criar seu primeiro agendamento."
+          />
+        ) : (
+          <CalendarGrid
+            date={dateStr}
+            appointments={appointments}
+            onSlotClick={handleSlotClick}
+          />
+        )}
       </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Novo Agendamento">
@@ -103,6 +131,7 @@ export default function AgendaPage() {
           clients={clients}
           date={dateStr}
           time={selectedTime}
+          existingAppointments={appointments.filter(a => a.date === dateStr)}
           onSubmit={handleNewAppointment}
           onCancel={() => setModalOpen(false)}
         />

@@ -11,6 +11,7 @@ const mockAppointments: Appointment[] = [
 interface AppointmentState {
   appointments: Appointment[];
   loading: boolean;
+  error: string | null;
   setAppointments: (a: Appointment[]) => void;
   addAppointment: (a: Appointment) => void;
   removeAppointment: (id: string) => void;
@@ -21,11 +22,12 @@ interface AppointmentState {
 export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   appointments: [],
   loading: false,
+  error: null,
   setAppointments: (appointments) => set({ appointments }),
   addAppointment: (a) => set({ appointments: [...get().appointments, a] }),
   removeAppointment: (id) => set({ appointments: get().appointments.filter(a => a.id !== id) }),
   updateAppointment: (id, data) => set({
     appointments: get().appointments.map(a => a.id === id ? { ...a, ...data } : a),
   }),
-  loadMock: () => set({ appointments: mockAppointments }),
+  loadMock: () => set({ appointments: mockAppointments, error: null }),
 }));
