@@ -1,28 +1,49 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
-import type { Service, Client } from '@/types';
+import { hasOverlap } from './CalendarGrid';
+import { useNotification } from '@/hooks/useNotification';
+import type { Service, Client, Appointment } from '@/types';
 
 interface ScheduleFormProps {
   services: Service[];
   clients: Client[];
   date: string;
   time: string;
+  existingAppointments?: Appointment[];
   onSubmit: (data: { clientName: string; clientPhone: string; clientEmail: string; serviceId: string; serviceName: string; date: string; time: string; duration: number }) => void;
   onCancel: () => void;
 }
 
-export default function ScheduleForm({ services, clients, date, time, onSubmit, onCancel }: ScheduleFormProps) {
+export default function ScheduleForm({ services, clients, date, time, existingAppointments = [], onSubmit, onCancel }: ScheduleFormProps) {
   const [selectedClient, setSelectedClient] = useState('');
   const [selectedService, setSelectedService] = useState('');
   const [formDate, setFormDate] = useState(date);
   const [formTime, setFormTime] = useState(time);
+  const notify = useNotification();
+
+  const selectedServiceData = useMemo(
+    () => services.find(s => s.id === selectedService),
+    [services, selectedService]
+  );
+
+  const overlapError = useMemo(() => {
+    if (!selectedServiceData || !formTime) return false;
+    const sameDayAppts = existingAppointments.filter(a => a.date === formDate);
+    return hasOverlap(formTime, selectedServiceData.duration, sameDayAppts);
+  }, [formTime, formDate, selectedServiceData, existingAppointments]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const client = clients.find(c => c.id === selectedClient);
-    const service = services.find(s => s.id === selectedService);
+    const service = selectedServiceData;
     if (!client || !service) return;
+
+    if (overlapError) {
+      notify.error('Este horário conflita com outro agendamento existente.');
+      return;
+    }
+
     onSubmit({
       clientName: client.name,
       clientPhone: client.phone,
@@ -33,6 +54,7 @@ export default function ScheduleForm({ services, clients, date, time, onSubmit, 
       time: formTime,
       duration: service.duration,
     });
+    notify.success('Agendamento criado com sucesso!');
   };
 
   return (
@@ -55,8 +77,15 @@ export default function ScheduleForm({ services, clients, date, time, onSubmit, 
         <FormInput label="Data" type="date" value={formDate} onChange={e => setFormDate(e.target.value)} required />
         <FormInput label="Horário" type="time" value={formTime} onChange={e => setFormTime(e.target.value)} required />
       </div>
+
+      {overlapError && (
+        <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-xs text-destructive">
+          ⚠️ Este horário conflita com outro agendamento. Escolha um horário diferente.
+        </div>
+      )}
+
       <div className="flex gap-3 pt-2">
-        <button type="submit" className="btn-primary flex-1">Agendar</button>
+        <button type="submit" disabled={overlapError} className="btn-primary flex-1 disabled:opacity-50">Agendar</button>
         <button type="button" onClick={onCancel} className="btn-outline flex-1">Cancelar</button>
       </div>
     </form>
