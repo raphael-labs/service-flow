@@ -71,7 +71,7 @@ export default function DashboardLayout() {
         <div className="px-3 pb-2">
           <button
             onClick={() => window.open(`/booking/${user.slug}`, '_blank')}
-            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+            className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs font-medium text-sidebar-foreground hover:text-sidebar-primary-foreground hover:bg-sidebar-accent transition-all"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             Página pública
