@@ -80,16 +80,16 @@ export default function DashboardLayout() {
       )}
 
       {/* Footer */}
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-sidebar-primary text-xs font-bold">
             {user?.name?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">{user?.name || 'Usuário'}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.businessName}</p>
+            <p className="text-sm font-medium text-sidebar-primary-foreground truncate">{user?.name || 'Usuário'}</p>
+            <p className="text-xs text-sidebar-foreground truncate">{user?.businessName}</p>
           </div>
-          <button onClick={handleLogout} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive transition-colors" title="Sair">
+          <button onClick={handleLogout} className="p-1.5 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-destructive transition-colors" title="Sair">
             <LogOut className="w-4 h-4" />
           </button>
         </div>
