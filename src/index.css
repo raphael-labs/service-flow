@@ -114,3 +114,46 @@
     @apply inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700;
   }
 }
+
+/* Notebook doodle animations */
+@keyframes doodle-draw-erase {
+  0% {
+    stroke-dashoffset: 300;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  55% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  90% {
+    stroke-dashoffset: -300;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -300;
+    opacity: 0;
+  }
+}
+
+@keyframes doodle-container {
+  0%, 100% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+}
+
+.doodle-path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: doodle-draw-erase 8s ease-in-out forwards;
+}
+
+.doodle-draw {
+  animation: doodle-container 8s ease-in-out forwards;
+}

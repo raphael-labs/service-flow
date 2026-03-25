@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
+import NotebookBackground from '@/components/NotebookBackground';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
