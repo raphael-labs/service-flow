@@ -7,11 +7,11 @@ import {
   Briefcase,
   Settings,
   LogOut,
-  Calendar,
   Menu,
   X,
   ExternalLink,
 } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { useState } from 'react';
 
 const navItems = [
