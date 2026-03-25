@@ -100,7 +100,7 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col bg-card border-r border-border fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:flex w-64 flex-col bg-sidebar border-r border-sidebar-border fixed inset-y-0 left-0 z-30">
         <SidebarContent />
       </aside>
 
