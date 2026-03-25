@@ -108,7 +108,7 @@ export default function DashboardLayout() {
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-64 flex flex-col bg-card border-r border-border animate-slide-in-left">
+          <aside className="absolute inset-y-0 left-0 w-64 flex flex-col bg-sidebar border-r border-sidebar-border animate-slide-in-left">
             <SidebarContent />
           </aside>
         </div>
