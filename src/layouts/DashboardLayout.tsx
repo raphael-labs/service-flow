@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
+import NotebookBackground from '@/components/NotebookBackground';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -98,7 +99,8 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background relative">
+      <NotebookBackground />
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-sidebar border-r border-sidebar-border fixed inset-y-0 left-0 z-30">
         <SidebarContent />
