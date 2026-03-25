@@ -43,10 +43,8 @@ export default function DashboardLayout() {
       {/* Logo */}
       <div className="p-5 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-            <Calendar className="w-4.5 h-4.5 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-bold font-heading text-foreground">AgendaPro</span>
+          <img src={logo} alt="Satelite" className="w-9 h-9 object-contain" />
+          <span className="text-lg font-bold font-heading text-foreground">Satelite</span>
         </div>
       </div>
 
