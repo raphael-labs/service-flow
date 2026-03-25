@@ -41,10 +41,10 @@ export default function DashboardLayout() {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="p-5 border-b border-border">
+      <div className="p-5 border-b border-sidebar-border">
         <div className="flex items-center gap-2.5">
           <img src={logo} alt="Satelite" className="w-9 h-9 object-contain" />
-          <span className="text-lg font-bold font-heading text-foreground">Satelite</span>
+          <span className="text-lg font-bold font-heading text-sidebar-primary-foreground">Satelite</span>
         </div>
       </div>
 
