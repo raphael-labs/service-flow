@@ -7,10 +7,10 @@ import { useAppointmentStore } from '@/stores/appointmentStore';
 
 // Mock data for public booking
 const mockServices = [
-  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45 },
-  { id: '2', name: 'Barba', duration: 30, price: 30 },
-  { id: '3', name: 'Corte + Barba', duration: 60, price: 65 },
-  { id: '4', name: 'Hidratação', duration: 45, price: 55 },
+  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45, currency: 'BRL' as const, simultaneousSlots: 1 },
+  { id: '2', name: 'Barba', duration: 30, price: 30, currency: 'BRL' as const, simultaneousSlots: 1 },
+  { id: '3', name: 'Corte + Barba', duration: 60, price: 65, currency: 'BRL' as const, simultaneousSlots: 1 },
+  { id: '4', name: 'Hidratação', duration: 45, price: 55, currency: 'BRL' as const, simultaneousSlots: 1 },
 ];
 
 const allSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
@@ -133,7 +133,11 @@ export default function BookingPage() {
                   <p className="text-xs text-muted-foreground mt-0.5">{s.duration} min</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground">R$ {s.price}</span>
+                  {s.price != null && (
+                    <span className="text-sm font-semibold text-foreground">
+                      {s.currency === 'USD' ? 'US$' : s.currency === 'EUR' ? '€' : 'R$'} {s.price}
+                    </span>
+                  )}
                   <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 </div>
               </button>
