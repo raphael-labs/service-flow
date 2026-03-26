@@ -86,15 +86,19 @@ export default function ServicosPage() {
                   <th className="table-header text-left px-5 py-3">Serviço</th>
                   <th className="table-header text-left px-5 py-3">Duração</th>
                   <th className="table-header text-left px-5 py-3">Preço</th>
+                  <th className="table-header text-left px-5 py-3">Simultâneos</th>
                   <th className="table-header text-right px-5 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {paginatedItems.map(s => (
+                {paginatedItems.map(s => {
+                  const symbol = s.currency === 'USD' ? 'US$' : s.currency === 'EUR' ? '€' : 'R$';
+                  return (
                   <tr key={s.id} className="border-b border-border last:border-0 hover:bg-secondary/50 transition-colors">
                     <td className="px-5 py-3.5 text-sm font-medium text-foreground">{s.name}</td>
                     <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.duration} min</td>
-                    <td className="px-5 py-3.5 text-sm text-muted-foreground">R$ {s.price.toFixed(2)}</td>
+                    <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.price != null ? `${symbol} ${s.price.toFixed(2)}` : '—'}</td>
+                    <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.simultaneousSlots}</td>
                     <td className="px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button onClick={() => openEdit(s.id)} className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors">
