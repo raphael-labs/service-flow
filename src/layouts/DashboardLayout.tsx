@@ -18,6 +18,7 @@ import {
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
 import NotebookBackground from '@/components/NotebookBackground';
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -158,8 +159,11 @@ export default function DashboardLayout() {
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <div className="flex-1" />
-            <div className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            <div className="flex items-center gap-2">
+              <NotificationDropdown />
+              <div className="text-sm text-muted-foreground hidden sm:block">
+                {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </div>
             </div>
           </div>
         </header>
