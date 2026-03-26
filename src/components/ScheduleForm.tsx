@@ -70,7 +70,11 @@ export default function ScheduleForm({ services, clients, date, time, existingAp
         label="Serviço"
         value={selectedService}
         onChange={e => setSelectedService(e.target.value)}
-        options={services.map(s => ({ value: s.id, label: `${s.name} (${s.duration}min - R$${s.price})` }))}
+        options={services.map(s => {
+          const symbol = s.currency === 'USD' ? 'US$' : s.currency === 'EUR' ? '€' : 'R$';
+          const priceLabel = s.price != null ? ` - ${symbol}${s.price}` : '';
+          return { value: s.id, label: `${s.name} (${s.duration}min${priceLabel})` };
+        })}
         required
       />
       <div className="grid grid-cols-2 gap-3">

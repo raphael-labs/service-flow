@@ -8,11 +8,15 @@ export interface User {
   address: string;
 }
 
+export type Currency = 'BRL' | 'USD' | 'EUR';
+
 export interface Service {
   id: string;
   name: string;
   duration: number; // minutes
-  price: number;
+  price?: number;
+  currency: Currency;
+  simultaneousSlots: number; // how many can be booked at the same time
 }
 
 export interface Client {
