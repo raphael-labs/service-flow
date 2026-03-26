@@ -156,7 +156,10 @@ export default function BookingPage() {
             </div>
 
             {service && (
-              <div className="badge-primary text-xs">{service.name} · {service.duration}min · R${service.price}</div>
+              <div className="badge-primary text-xs">
+                {service.name} · {service.duration}min
+                {service.price != null && ` · ${service.currency === 'USD' ? 'US$' : service.currency === 'EUR' ? '€' : 'R$'}${service.price}`}
+              </div>
             )}
 
             <div>
