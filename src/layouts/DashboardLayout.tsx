@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore, type ThemeMode } from '@/stores/themeStore';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -10,6 +11,9 @@ import {
   Menu,
   X,
   ExternalLink,
+  BookOpen,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
@@ -25,9 +29,16 @@ const navItems = [
 
 export default function DashboardLayout() {
   const { user, logout } = useAuthStore();
+  const { theme, setTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const themeOptions: { value: ThemeMode; label: string; icon: typeof BookOpen }[] = [
+    { value: 'agenda', label: 'Agenda', icon: BookOpen },
+    { value: 'claro', label: 'Claro', icon: Sun },
+    { value: 'escuro', label: 'Escuro', icon: Moon },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -67,6 +78,28 @@ export default function DashboardLayout() {
         ))}
       </nav>
 
+      {/* Theme switcher */}
+      <div className="px-3 pb-2">
+        <p className="px-3.5 mb-1.5 text-[10px] uppercase tracking-wider font-medium text-sidebar-foreground/60">Tema</p>
+        <div className="flex gap-1 px-1">
+          {themeOptions.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setTheme(opt.value)}
+              className={`flex-1 flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
+                theme === opt.value
+                  ? 'bg-sidebar-accent text-sidebar-primary'
+                  : 'text-sidebar-foreground hover:text-sidebar-primary-foreground hover:bg-sidebar-accent/50'
+              }`}
+              title={opt.label}
+            >
+              <opt.icon className="w-3.5 h-3.5" />
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Public link */}
       {user?.slug && (
         <div className="px-3 pb-2">
@@ -100,7 +133,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex bg-background relative">
-      <NotebookBackground />
+      {theme === 'agenda' && <NotebookBackground />}
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-sidebar border-r border-sidebar-border fixed inset-y-0 left-0 z-30">
         <SidebarContent />
