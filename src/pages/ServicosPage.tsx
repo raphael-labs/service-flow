@@ -27,7 +27,7 @@ export default function ServicosPage() {
 
   const { paginatedItems, currentPage, totalPages, totalItems, itemsPerPage, setCurrentPage } = usePagination(services, 10);
 
-  const handleSubmit = (data: { name: string; duration: number; price: number }) => {
+  const handleSubmit = (data: { name: string; duration: number; price?: number; currency: import('@/types').Currency; simultaneousSlots: number }) => {
     if (editingService) {
       updateService(editingService, data);
       notify.success('Serviço atualizado com sucesso!');
