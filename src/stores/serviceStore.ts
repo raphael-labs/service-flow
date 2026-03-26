@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import type { Service } from '@/types';
 
 const mockServices: Service[] = [
-  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45 },
-  { id: '2', name: 'Barba', duration: 30, price: 30 },
-  { id: '3', name: 'Corte + Barba', duration: 60, price: 65 },
-  { id: '4', name: 'Hidratação', duration: 45, price: 55 },
-  { id: '5', name: 'Sobrancelha', duration: 15, price: 20 },
+  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '2', name: 'Barba', duration: 30, price: 30, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '3', name: 'Corte + Barba', duration: 60, price: 65, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '4', name: 'Hidratação', duration: 45, price: 55, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '5', name: 'Sobrancelha', duration: 15, price: 20, currency: 'BRL', simultaneousSlots: 2 },
 ];
 
 interface ServiceState {
