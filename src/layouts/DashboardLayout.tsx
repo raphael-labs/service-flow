@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore, type ThemeMode } from '@/stores/themeStore';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -10,6 +11,9 @@ import {
   Menu,
   X,
   ExternalLink,
+  BookOpen,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
@@ -25,9 +29,16 @@ const navItems = [
 
 export default function DashboardLayout() {
   const { user, logout } = useAuthStore();
+  const { theme, setTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const themeOptions: { value: ThemeMode; label: string; icon: typeof BookOpen }[] = [
+    { value: 'agenda', label: 'Agenda', icon: BookOpen },
+    { value: 'claro', label: 'Claro', icon: Sun },
+    { value: 'escuro', label: 'Escuro', icon: Moon },
+  ];
 
   const handleLogout = () => {
     logout();
