@@ -5,7 +5,7 @@ export function useTranslation() {
   const language = useLanguageStore(s => s.language);
   
   function t(key: TranslationKey, replacements?: Record<string, string>): string {
-    let text = translations[language][key] || translations.pt[key] || key;
+    let text: string = translations[language][key] ?? translations.pt[key] ?? key;
     if (replacements) {
       Object.entries(replacements).forEach(([k, v]) => {
         text = text.replace(`{${k}}`, v);
