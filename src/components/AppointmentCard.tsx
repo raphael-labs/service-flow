@@ -1,5 +1,6 @@
 import type { Appointment } from '@/types';
 import { Clock, User } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -7,6 +8,8 @@ interface AppointmentCardProps {
 }
 
 export default function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
+  const { t } = useTranslation();
+
   const statusColors: Record<string, string> = {
     confirmed: 'badge-success',
     pending: 'badge-primary',
@@ -14,9 +17,9 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
   };
 
   const statusLabels: Record<string, string> = {
-    confirmed: 'Confirmado',
-    pending: 'Pendente',
-    cancelled: 'Cancelado',
+    confirmed: t('confirmed'),
+    pending: t('pending'),
+    cancelled: t('cancelled'),
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Appointment } from '@/types';
 import { User, Clock } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CalendarGridProps {
   date: string;
@@ -10,7 +11,7 @@ interface CalendarGridProps {
   onSlotClick: (time: string) => void;
 }
 
-const SLOT_HEIGHT = 48; // px per 30min
+const SLOT_HEIGHT = 48;
 const PX_PER_MINUTE = SLOT_HEIGHT / 30;
 
 function timeToMinutes(time: string): number {
@@ -48,6 +49,8 @@ export function hasOverlap(
 }
 
 export default function CalendarGrid({ date, appointments, startHour = 8, endHour = 18, onSlotClick }: CalendarGridProps) {
+  const { t } = useTranslation();
+
   const dayAppointments = useMemo(
     () => appointments.filter(a => a.date === date && a.status !== 'cancelled'),
     [appointments, date]
@@ -68,7 +71,6 @@ export default function CalendarGrid({ date, appointments, startHour = 8, endHou
 
   return (
     <div className="flex gap-3">
-      {/* Time labels */}
       <div className="shrink-0 w-14 relative" style={{ height: totalHeight }}>
         {slots.map(time => {
           const top = (timeToMinutes(time) - startMinutes) * PX_PER_MINUTE;
@@ -84,9 +86,7 @@ export default function CalendarGrid({ date, appointments, startHour = 8, endHou
         })}
       </div>
 
-      {/* Grid area */}
       <div className="flex-1 relative" style={{ height: totalHeight }}>
-        {/* Grid lines */}
         {slots.map(time => {
           const top = (timeToMinutes(time) - startMinutes) * PX_PER_MINUTE;
           const isHour = time.endsWith(':00');
@@ -99,7 +99,6 @@ export default function CalendarGrid({ date, appointments, startHour = 8, endHou
           );
         })}
 
-        {/* Clickable slots */}
         {slots.map(time => {
           const top = (timeToMinutes(time) - startMinutes) * PX_PER_MINUTE;
           return (
@@ -110,16 +109,15 @@ export default function CalendarGrid({ date, appointments, startHour = 8, endHou
               onClick={() => onSlotClick(time)}
             >
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                + Novo agendamento
+                {t('newAppointmentSlot')}
               </span>
             </div>
           );
         })}
 
-        {/* Appointments - proportional blocks */}
         {dayAppointments.map(a => {
           const topOffset = (timeToMinutes(a.time) - startMinutes) * PX_PER_MINUTE;
-          const height = Math.max(a.duration * PX_PER_MINUTE, 28); // min 28px for readability
+          const height = Math.max(a.duration * PX_PER_MINUTE, 28);
           const colorClass = statusColors[a.status] || statusColors.confirmed;
           const isCompact = a.duration <= 15;
 

@@ -9,6 +9,7 @@ import DataPagination from '@/components/DataPagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useNotification } from '@/hooks/useNotification';
 import { Pencil, Trash2, Plus, Search, Users } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function ClientesPage() {
   const { clients, loadMock, addClient, removeClient, updateClient } = useClientStore();
@@ -18,16 +19,13 @@ export default function ClientesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const notify = useNotification();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoading(true);
-    try {
-      loadMock();
-    } catch {
-      setError('Erro ao carregar clientes.');
-    }
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
+    try { loadMock(); } catch { setError(t('errorLoadingClients')); }
+    const ti = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(ti);
   }, []);
 
   const filtered = clients.filter(c =>
@@ -40,10 +38,10 @@ export default function ClientesPage() {
   const handleSubmit = (data: { name: string; phone: string; email: string }) => {
     if (editingClient) {
       updateClient(editingClient, data);
-      notify.success('Cliente atualizado com sucesso!');
+      notify.success(t('clientUpdated'));
     } else {
       addClient({ ...data, id: crypto.randomUUID() });
-      notify.success('Cliente adicionado com sucesso!');
+      notify.success(t('clientAdded'));
     }
     setModalOpen(false);
     setEditingClient(null);
@@ -51,7 +49,7 @@ export default function ClientesPage() {
 
   const handleRemove = (id: string, name: string) => {
     removeClient(id);
-    notify.success(`Cliente "${name}" removido.`);
+    notify.success(t('clientRemoved', { name }));
   };
 
   const openEdit = (id: string) => {
@@ -66,9 +64,9 @@ export default function ClientesPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="page-header">Clientes</h1>
+        <h1 className="page-header">{t('clients')}</h1>
         <button onClick={() => { setEditingClient(null); setModalOpen(true); }} className="btn-primary text-sm">
-          <Plus className="w-4 h-4 mr-1.5" /> Novo Cliente
+          <Plus className="w-4 h-4 mr-1.5" /> {t('newClient')}
         </button>
       </div>
 
@@ -76,7 +74,7 @@ export default function ClientesPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
           className="input-base pl-9"
-          placeholder="Buscar clientes..."
+          placeholder={t('searchClients')}
           value={search}
           onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
         />
@@ -88,11 +86,11 @@ export default function ClientesPage() {
         <div className="card-elevated">
           <EmptyState
             icon={Users}
-            title="Nenhum cliente cadastrado"
-            description="Adicione seu primeiro cliente para começar a agendar serviços."
+            title={t('noClients')}
+            description={t('noClientsDesc')}
             action={
               <button onClick={() => setModalOpen(true)} className="btn-primary text-xs">
-                <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar Cliente
+                <Plus className="w-3.5 h-3.5 mr-1" /> {t('addClient')}
               </button>
             }
           />
@@ -101,8 +99,8 @@ export default function ClientesPage() {
         <div className="card-elevated">
           <EmptyState
             icon={Search}
-            title="Nenhum resultado"
-            description={`Nenhum cliente encontrado para "${search}".`}
+            title={t('noResults')}
+            description={`${t('noResultsFor')} "${search}".`}
           />
         </div>
       ) : (
@@ -111,10 +109,10 @@ export default function ClientesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="table-header text-left px-5 py-3">Nome</th>
-                  <th className="table-header text-left px-5 py-3">Telefone</th>
-                  <th className="table-header text-left px-5 py-3 hidden sm:table-cell">Email</th>
-                  <th className="table-header text-right px-5 py-3">Ações</th>
+                  <th className="table-header text-left px-5 py-3">{t('name')}</th>
+                  <th className="table-header text-left px-5 py-3">{t('phone')}</th>
+                  <th className="table-header text-left px-5 py-3 hidden sm:table-cell">{t('email')}</th>
+                  <th className="table-header text-right px-5 py-3">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -148,7 +146,7 @@ export default function ClientesPage() {
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditingClient(null); }} title={editingClient ? 'Editar Cliente' : 'Novo Cliente'}>
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditingClient(null); }} title={editingClient ? t('editClient') : t('newClient')}>
         <ClientForm
           initialData={editData}
           onSubmit={handleSubmit}

@@ -9,6 +9,7 @@ import DashboardSkeleton from '@/components/DashboardSkeleton';
 import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 import { CalendarDays, Users, Briefcase, TrendingUp } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function DashboardPage() {
   const { appointments, loadMock: loadAppointments } = useAppointmentStore();
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const user = useAuthStore(s => s.user);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoading(true);
@@ -25,10 +27,10 @@ export default function DashboardPage() {
       loadClients();
       loadServices();
     } catch {
-      setError('Erro ao carregar dados do dashboard.');
+      setError(t('errorLoadingDashboard'));
     }
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
+    const ti = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(ti);
   }, []);
 
   if (isLoading) return <DashboardSkeleton />;
@@ -38,17 +40,17 @@ export default function DashboardPage() {
   const todayAppointments = appointments.filter(a => a.date === todayStr);
 
   const stats = [
-    { label: 'Agendamentos Hoje', value: todayAppointments.length, icon: CalendarDays, color: 'text-primary' },
-    { label: 'Total Clientes', value: clients.length, icon: Users, color: 'text-emerald-600' },
-    { label: 'Serviços Ativos', value: services.length, icon: Briefcase, color: 'text-amber-600' },
-    { label: 'Este Mês', value: appointments.length, icon: TrendingUp, color: 'text-violet-600' },
+    { label: t('appointmentsToday'), value: todayAppointments.length, icon: CalendarDays, color: 'text-primary' },
+    { label: t('totalClients'), value: clients.length, icon: Users, color: 'text-emerald-600' },
+    { label: t('activeServices'), value: services.length, icon: Briefcase, color: 'text-amber-600' },
+    { label: t('thisMonth'), value: appointments.length, icon: TrendingUp, color: 'text-violet-600' },
   ];
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="page-header">Olá, {user?.name?.split(' ')[0] || 'Usuário'} 👋</h1>
-        <p className="text-sm text-muted-foreground mt-1">Aqui está o resumo do seu dia</p>
+        <h1 className="page-header">{t('hello')}, {user?.name?.split(' ')[0] || t('user')} 👋</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('daySummary')}</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -68,13 +70,13 @@ export default function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold font-heading text-foreground mb-3">Agendamentos de Hoje</h2>
+        <h2 className="text-lg font-semibold font-heading text-foreground mb-3">{t('todayAppointments')}</h2>
         {todayAppointments.length === 0 ? (
           <div className="card-elevated">
             <EmptyState
               icon={CalendarDays}
-              title="Nenhum agendamento para hoje"
-              description="Vá para a Agenda para criar um novo agendamento."
+              title={t('noAppointmentsToday')}
+              description={t('goToAgenda')}
             />
           </div>
         ) : (

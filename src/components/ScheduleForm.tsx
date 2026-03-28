@@ -3,6 +3,7 @@ import FormInput from './FormInput';
 import FormSelect from './FormSelect';
 import { hasOverlap } from './CalendarGrid';
 import { useNotification } from '@/hooks/useNotification';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { Service, Client, Appointment } from '@/types';
 
 interface ScheduleFormProps {
@@ -21,6 +22,7 @@ export default function ScheduleForm({ services, clients, date, time, existingAp
   const [formDate, setFormDate] = useState(date);
   const [formTime, setFormTime] = useState(time);
   const notify = useNotification();
+  const { t } = useTranslation();
 
   const selectedServiceData = useMemo(
     () => services.find(s => s.id === selectedService),
@@ -40,7 +42,7 @@ export default function ScheduleForm({ services, clients, date, time, existingAp
     if (!client || !service) return;
 
     if (overlapError) {
-      notify.error('Este horário conflita com outro agendamento existente.');
+      notify.error(t('timeConflictToast'));
       return;
     }
 
@@ -54,20 +56,20 @@ export default function ScheduleForm({ services, clients, date, time, existingAp
       time: formTime,
       duration: service.duration,
     });
-    notify.success('Agendamento criado com sucesso!');
+    notify.success(t('appointmentCreated'));
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormSelect
-        label="Cliente"
+        label={t('client')}
         value={selectedClient}
         onChange={e => setSelectedClient(e.target.value)}
         options={clients.map(c => ({ value: c.id, label: c.name }))}
         required
       />
       <FormSelect
-        label="Serviço"
+        label={t('service')}
         value={selectedService}
         onChange={e => setSelectedService(e.target.value)}
         options={services.map(s => {
@@ -78,19 +80,19 @@ export default function ScheduleForm({ services, clients, date, time, existingAp
         required
       />
       <div className="grid grid-cols-2 gap-3">
-        <FormInput label="Data" type="date" value={formDate} onChange={e => setFormDate(e.target.value)} required />
-        <FormInput label="Horário" type="time" value={formTime} onChange={e => setFormTime(e.target.value)} required />
+        <FormInput label={t('date')} type="date" value={formDate} onChange={e => setFormDate(e.target.value)} required />
+        <FormInput label={t('time')} type="time" value={formTime} onChange={e => setFormTime(e.target.value)} required />
       </div>
 
       {overlapError && (
         <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-xs text-destructive">
-          ⚠️ Este horário conflita com outro agendamento. Escolha um horário diferente.
+          {t('timeConflict')}
         </div>
       )}
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" disabled={overlapError} className="btn-primary flex-1 disabled:opacity-50">Agendar</button>
-        <button type="button" onClick={onCancel} className="btn-outline flex-1">Cancelar</button>
+        <button type="submit" disabled={overlapError} className="btn-primary flex-1 disabled:opacity-50">{t('schedule')}</button>
+        <button type="button" onClick={onCancel} className="btn-outline flex-1">{t('cancel')}</button>
       </div>
     </form>
   );

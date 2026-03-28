@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface DataPaginationProps {
   currentPage: number;
@@ -9,6 +10,7 @@ interface DataPaginationProps {
 }
 
 export default function DataPagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }: DataPaginationProps) {
+  const { t } = useTranslation();
   if (totalPages <= 1) return null;
 
   const start = (currentPage - 1) * itemsPerPage + 1;
@@ -17,7 +19,7 @@ export default function DataPagination({ currentPage, totalPages, totalItems, it
   return (
     <div className="flex items-center justify-between px-5 py-3 border-t border-border text-xs text-muted-foreground">
       <span>
-        {start}–{end} de {totalItems}
+        {start}–{end} {t('of')} {totalItems}
       </span>
       <div className="flex items-center gap-1">
         <button

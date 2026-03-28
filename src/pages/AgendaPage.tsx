@@ -10,6 +10,7 @@ import EmptyState from '@/components/EmptyState';
 import ErrorState from '@/components/ErrorState';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { useNotification } from '@/hooks/useNotification';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AgendaPage() {
   const { appointments, loadMock, addAppointment, loading, error } = useAppointmentStore();
@@ -20,15 +21,15 @@ export default function AgendaPage() {
   const [selectedTime, setSelectedTime] = useState('08:00');
   const [isLoading, setIsLoading] = useState(true);
   const notify = useNotification();
+  const { t, locale } = useTranslation();
 
   useEffect(() => {
     setIsLoading(true);
     loadMock();
     loadClients();
     loadServices();
-    // Simulate loading
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
+    const ti = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(ti);
   }, []);
 
   const dateStr = currentDate.toISOString().split('T')[0];
@@ -65,9 +66,9 @@ export default function AgendaPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="page-header">Agenda</h1>
+        <h1 className="page-header">{t('agenda')}</h1>
         <button onClick={() => setModalOpen(true)} className="btn-primary text-sm">
-          + Novo Agendamento
+          {t('newAppointment')}
         </button>
       </div>
 
@@ -76,7 +77,7 @@ export default function AgendaPage() {
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => goDay(-7)} className="btn-ghost p-2"><ChevronLeft className="w-4 h-4" /></button>
           <span className="text-sm font-medium text-foreground">
-            {currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+            {currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}
           </span>
           <button onClick={() => goDay(7)} className="btn-ghost p-2"><ChevronRight className="w-4 h-4" /></button>
         </div>
@@ -97,7 +98,7 @@ export default function AgendaPage() {
                     : 'hover:bg-secondary text-muted-foreground'
                 }`}
               >
-                <span className="font-medium">{d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
+                <span className="font-medium">{d.toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')}</span>
                 <span className="text-lg font-bold mt-0.5">{d.getDate()}</span>
                 {dayCount > 0 && (
                   <span className={`mt-0.5 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-primary-foreground' : 'bg-primary'}`} />
@@ -113,8 +114,8 @@ export default function AgendaPage() {
         {todayAppointments.length === 0 && appointments.length === 0 ? (
           <EmptyState
             icon={CalendarDays}
-            title="Nenhum agendamento"
-            description="Clique em um horário ou no botão acima para criar seu primeiro agendamento."
+            title={t('noAppointments')}
+            description={t('clickToCreate')}
           />
         ) : (
           <CalendarGrid
@@ -125,7 +126,7 @@ export default function AgendaPage() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Novo Agendamento">
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t('newAppointment')}>
         <ScheduleForm
           services={services}
           clients={clients}
