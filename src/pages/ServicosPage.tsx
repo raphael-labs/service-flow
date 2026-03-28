@@ -9,6 +9,7 @@ import DataPagination from '@/components/DataPagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useNotification } from '@/hooks/useNotification';
 import { Pencil, Trash2, Plus, Briefcase } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function ServicosPage() {
   const { services, loadMock, addService, removeService, updateService } = useServiceStore();
@@ -17,12 +18,13 @@ export default function ServicosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const notify = useNotification();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoading(true);
-    try { loadMock(); } catch { setError('Erro ao carregar serviços.'); }
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
+    try { loadMock(); } catch { setError(t('errorLoadingServices')); }
+    const ti = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(ti);
   }, []);
 
   const { paginatedItems, currentPage, totalPages, totalItems, itemsPerPage, setCurrentPage } = usePagination(services, 10);
@@ -30,10 +32,10 @@ export default function ServicosPage() {
   const handleSubmit = (data: { name: string; duration: number; price?: number; currency: import('@/types').Currency; simultaneousSlots: number }) => {
     if (editingService) {
       updateService(editingService, data);
-      notify.success('Serviço atualizado com sucesso!');
+      notify.success(t('serviceUpdated'));
     } else {
       addService({ ...data, id: crypto.randomUUID() });
-      notify.success('Serviço adicionado com sucesso!');
+      notify.success(t('serviceAdded'));
     }
     setModalOpen(false);
     setEditingService(null);
@@ -41,7 +43,7 @@ export default function ServicosPage() {
 
   const handleRemove = (id: string, name: string) => {
     removeService(id);
-    notify.success(`Serviço "${name}" removido.`);
+    notify.success(t('serviceRemoved', { name }));
   };
 
   const openEdit = (id: string) => {
@@ -56,9 +58,9 @@ export default function ServicosPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="page-header">Serviços</h1>
+        <h1 className="page-header">{t('services')}</h1>
         <button onClick={() => { setEditingService(null); setModalOpen(true); }} className="btn-primary text-sm">
-          <Plus className="w-4 h-4 mr-1.5" /> Novo Serviço
+          <Plus className="w-4 h-4 mr-1.5" /> {t('newService')}
         </button>
       </div>
 
@@ -68,11 +70,11 @@ export default function ServicosPage() {
         <div className="card-elevated">
           <EmptyState
             icon={Briefcase}
-            title="Nenhum serviço cadastrado"
-            description="Adicione seus serviços para começar a receber agendamentos."
+            title={t('noServices')}
+            description={t('noServicesDesc')}
             action={
               <button onClick={() => setModalOpen(true)} className="btn-primary text-xs">
-                <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar Serviço
+                <Plus className="w-3.5 h-3.5 mr-1" /> {t('addService')}
               </button>
             }
           />
@@ -83,11 +85,11 @@ export default function ServicosPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="table-header text-left px-5 py-3">Serviço</th>
-                  <th className="table-header text-left px-5 py-3">Duração</th>
-                  <th className="table-header text-left px-5 py-3">Preço</th>
-                  <th className="table-header text-left px-5 py-3">Simultâneos</th>
-                  <th className="table-header text-right px-5 py-3">Ações</th>
+                  <th className="table-header text-left px-5 py-3">{t('service')}</th>
+                  <th className="table-header text-left px-5 py-3">{t('duration')}</th>
+                  <th className="table-header text-left px-5 py-3">{t('price')}</th>
+                  <th className="table-header text-left px-5 py-3">{t('simultaneous')}</th>
+                  <th className="table-header text-right px-5 py-3">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,7 +127,7 @@ export default function ServicosPage() {
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditingService(null); }} title={editingService ? 'Editar Serviço' : 'Novo Serviço'}>
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditingService(null); }} title={editingService ? t('editService') : t('newService')}>
         <ServiceForm
           initialData={editData}
           onSubmit={handleSubmit}

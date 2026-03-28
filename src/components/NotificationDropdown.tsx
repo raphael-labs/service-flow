@@ -2,14 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Bell, CalendarPlus, CalendarX, Check, CheckCheck } from 'lucide-react';
 import { useNotificationStore, type AppNotification } from '@/stores/notificationStore';
 import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-
-function timeAgo(dateStr: string) {
-  return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: ptBR });
-}
+import { ptBR, enUS, es } from 'date-fns/locale';
+import { useTranslation } from '@/hooks/useTranslation';
 
 function NotificationItem({ notification, onRead }: { notification: AppNotification; onRead: () => void }) {
   const isNew = notification.type === 'new_appointment';
+  const { t, language } = useTranslation();
+  const dateFnsLocale = language === 'pt' ? ptBR : language === 'es' ? es : enUS;
 
   return (
     <button
@@ -26,7 +25,7 @@ function NotificationItem({ notification, onRead }: { notification: AppNotificat
         </div>
         <div className="flex-1 min-w-0">
           <p className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
-            {isNew ? 'Novo serviço agendado' : 'Agendamento cancelado'}
+            {isNew ? t('newAppointmentNotif') : t('cancelledAppointmentNotif')}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5 truncate">{notification.serviceName}</p>
           <p className="text-xs text-muted-foreground truncate">{notification.clientName}</p>
@@ -34,9 +33,11 @@ function NotificationItem({ notification, onRead }: { notification: AppNotificat
             {notification.date} • {notification.time}
           </p>
           {notification.reason && (
-            <p className="text-xs text-destructive/80 mt-0.5 italic">Motivo: {notification.reason}</p>
+            <p className="text-xs text-destructive/80 mt-0.5 italic">{t('reason')}: {notification.reason}</p>
           )}
-          <p className="text-[10px] text-muted-foreground/60 mt-1">{timeAgo(notification.createdAt)}</p>
+          <p className="text-[10px] text-muted-foreground/60 mt-1">
+            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: dateFnsLocale })}
+          </p>
         </div>
         {!notification.read && (
           <div className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />
@@ -51,6 +52,7 @@ export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const count = unreadCount();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (notifications.length === 0) loadMock();
@@ -69,7 +71,7 @@ export default function NotificationDropdown() {
       <button
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
-        title="Notificações"
+        title={t('notifications')}
       >
         <Bell className="w-5 h-5" />
         {count > 0 && (
@@ -81,25 +83,23 @@ export default function NotificationDropdown() {
 
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 animate-fade-in">
-          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <h3 className="text-sm font-semibold text-foreground">Notificações</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('notifications')}</h3>
             {count > 0 && (
               <button
                 onClick={() => markAllAsRead()}
                 className="flex items-center gap-1 text-[11px] text-primary hover:underline font-medium"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
-                Marcar todas como lidas
+                {t('markAllRead')}
               </button>
             )}
           </div>
 
-          {/* List */}
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="py-10 text-center text-sm text-muted-foreground">
-                Nenhuma notificação
+                {t('noNotifications')}
               </div>
             ) : (
               notifications.map((n) => (

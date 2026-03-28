@@ -4,8 +4,7 @@ import FormInput from '@/components/FormInput';
 import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppointmentStore } from '@/stores/appointmentStore';
-
-// Mock data for public booking
+import { useTranslation } from '@/hooks/useTranslation';
 import type { Currency } from '@/types';
 
 const mockServices: { id: string; name: string; duration: number; price?: number; currency: Currency; simultaneousSlots: number }[] = [
@@ -44,23 +43,22 @@ export default function BookingPage() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const { t, locale } = useTranslation();
 
   const service = mockServices.find(s => s.id === selectedService);
 
-  // Filter slots: only show times where the selected service fits without conflicts
   const availableSlots = useMemo(() => {
     if (!selectedDate || !service) return allSlots;
     const dayAppointments = appointments.filter(a => a.date === selectedDate && a.status !== 'cancelled');
     return allSlots.filter(time => !slotConflicts(time, service.duration, dayAppointments));
   }, [selectedDate, service, appointments]);
 
-  // Generate next 14 days
   const dates = useMemo(() => {
     const result = [];
     for (let i = 0; i < 14; i++) {
       const d = new Date();
       d.setDate(d.getDate() + i);
-      if (d.getDay() !== 0) result.push(d); // exclude sunday
+      if (d.getDay() !== 0) result.push(d);
     }
     return result;
   }, []);
@@ -82,7 +80,7 @@ export default function BookingPage() {
       });
     }
     setStep('done');
-    toast.success('Agendamento confirmado!');
+    toast.success(t('bookingConfirmed'));
   };
 
   const stepIndicator = (
@@ -105,23 +103,21 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-background flex items-start justify-center pt-8 pb-12 px-4">
       <div className="w-full max-w-lg animate-fade-in">
-        {/* Header */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
             <Calendar className="w-6 h-6 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold font-heading text-foreground capitalize">
-            {slug?.replace(/-/g, ' ') || 'Negócio'}
+            {slug?.replace(/-/g, ' ') || t('business')}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Escolha o serviço e agende seu horário</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('chooseServiceAndBook')}</p>
         </div>
 
         {step !== 'done' && stepIndicator}
 
-        {/* Step 1: Service */}
         {step === 'service' && (
           <div className="space-y-3">
-            <h2 className="text-base font-semibold text-foreground">Escolha o serviço</h2>
+            <h2 className="text-base font-semibold text-foreground">{t('chooseService')}</h2>
             {mockServices.map(s => (
               <button
                 key={s.id}
@@ -147,12 +143,11 @@ export default function BookingPage() {
           </div>
         )}
 
-        {/* Step 2: Date & Time */}
         {step === 'datetime' && (
           <div className="space-y-5">
             <div className="flex items-center gap-2">
               <button onClick={() => setStep('service')} className="btn-ghost p-2"><ArrowLeft className="w-4 h-4" /></button>
-              <h2 className="text-base font-semibold text-foreground">Escolha data e horário</h2>
+              <h2 className="text-base font-semibold text-foreground">{t('chooseDatetime')}</h2>
             </div>
 
             {service && (
@@ -163,7 +158,7 @@ export default function BookingPage() {
             )}
 
             <div>
-              <p className="text-sm font-medium text-foreground mb-2">Data</p>
+              <p className="text-sm font-medium text-foreground mb-2">{t('dateLabel')}</p>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {dates.map(d => {
                   const ds = d.toISOString().split('T')[0];
@@ -177,7 +172,7 @@ export default function BookingPage() {
                           : 'bg-card border border-border hover:border-primary/30 text-muted-foreground'
                       }`}
                     >
-                      <span className="font-medium">{d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
+                      <span className="font-medium">{d.toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')}</span>
                       <span className="text-base font-bold mt-0.5">{d.getDate()}</span>
                     </button>
                   );
@@ -187,9 +182,9 @@ export default function BookingPage() {
 
             {selectedDate && (
               <div>
-                <p className="text-sm font-medium text-foreground mb-2">Horário</p>
+                <p className="text-sm font-medium text-foreground mb-2">{t('timeLabel')}</p>
                 {availableSlots.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-4 text-center">Nenhum horário disponível nesta data para este serviço.</p>
+                  <p className="text-sm text-muted-foreground py-4 text-center">{t('noTimesAvailable')}</p>
                 ) : (
                   <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                     {availableSlots.map(time => (
@@ -216,14 +211,14 @@ export default function BookingPage() {
           <div className="space-y-5">
             <div className="flex items-center gap-2">
               <button onClick={() => setStep('datetime')} className="btn-ghost p-2"><ArrowLeft className="w-4 h-4" /></button>
-              <h2 className="text-base font-semibold text-foreground">Seus dados</h2>
+              <h2 className="text-base font-semibold text-foreground">{t('yourData')}</h2>
             </div>
 
             <div className="card-elevated p-4 space-y-1">
               <p className="text-sm font-medium text-foreground">{service?.name}</p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                {new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                {new Date(selectedDate + 'T12:00:00').toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Clock className="w-3 h-3" />
@@ -232,33 +227,32 @@ export default function BookingPage() {
             </div>
 
             <form onSubmit={handleConfirm} className="space-y-4">
-              <FormInput label="Nome" value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome completo" required />
-              <FormInput label="Telefone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(11) 99999-9999" required />
-              <FormInput label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required />
-              <button type="submit" className="btn-primary w-full">Confirmar Agendamento</button>
+              <FormInput label={t('name')} value={name} onChange={e => setName(e.target.value)} placeholder={t('yourFullName')} required />
+              <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} placeholder="(11) 99999-9999" required />
+              <FormInput label={t('email')} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required />
+              <button type="submit" className="btn-primary w-full">{t('confirmBooking')}</button>
             </form>
           </div>
         )}
 
-        {/* Step 4: Done */}
         {step === 'done' && (
           <div className="text-center py-8">
             <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-success" />
             </div>
-            <h2 className="text-xl font-bold font-heading text-foreground">Agendamento Confirmado!</h2>
+            <h2 className="text-xl font-bold font-heading text-foreground">{t('bookingConfirmedTitle')}</h2>
             <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
-              Seu horário foi reservado. Você receberá uma confirmação por email.
+              {t('bookingConfirmedDesc')}
             </p>
             <div className="card-elevated p-4 mt-6 text-left space-y-1 max-w-xs mx-auto">
               <p className="text-sm font-medium text-foreground">{service?.name}</p>
               <p className="text-xs text-muted-foreground">
-                {new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })} às {selectedTime}
+                {new Date(selectedDate + 'T12:00:00').toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })} · {selectedTime}
               </p>
               <p className="text-xs text-muted-foreground">{name}</p>
             </div>
             <button onClick={() => { setStep('service'); setSelectedService(''); setSelectedDate(''); setSelectedTime(''); setName(''); setPhone(''); setEmail(''); }} className="btn-outline mt-6">
-              Fazer outro agendamento
+              {t('makeAnother')}
             </button>
           </div>
         )}

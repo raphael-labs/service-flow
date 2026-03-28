@@ -19,14 +19,7 @@ import logo from '@/assets/logo.png';
 import { useState } from 'react';
 import NotebookBackground from '@/components/NotebookBackground';
 import NotificationDropdown from '@/components/NotificationDropdown';
-
-const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { label: 'Agenda', icon: CalendarDays, path: '/dashboard/agenda' },
-  { label: 'Clientes', icon: Users, path: '/dashboard/clientes' },
-  { label: 'Serviços', icon: Briefcase, path: '/dashboard/servicos' },
-  { label: 'Configurações', icon: Settings, path: '/dashboard/configuracoes' },
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function DashboardLayout() {
   const { user, logout } = useAuthStore();
@@ -34,11 +27,20 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { t, locale } = useTranslation();
+
+  const navItems = [
+    { label: t('dashboard'), icon: LayoutDashboard, path: '/dashboard' },
+    { label: t('agenda'), icon: CalendarDays, path: '/dashboard/agenda' },
+    { label: t('clients'), icon: Users, path: '/dashboard/clientes' },
+    { label: t('services'), icon: Briefcase, path: '/dashboard/servicos' },
+    { label: t('settings'), icon: Settings, path: '/dashboard/configuracoes' },
+  ];
 
   const themeOptions: { value: ThemeMode; label: string; icon: typeof BookOpen }[] = [
-    { value: 'agenda', label: 'Agenda', icon: BookOpen },
-    { value: 'claro', label: 'Claro', icon: Sun },
-    { value: 'escuro', label: 'Escuro', icon: Moon },
+    { value: 'agenda', label: t('themeAgenda'), icon: BookOpen },
+    { value: 'claro', label: t('themeLight'), icon: Sun },
+    { value: 'escuro', label: t('themeDark'), icon: Moon },
   ];
 
   const handleLogout = () => {
@@ -81,7 +83,7 @@ export default function DashboardLayout() {
 
       {/* Theme switcher */}
       <div className="px-3 pb-2">
-        <p className="px-3.5 mb-1.5 text-[10px] uppercase tracking-wider font-medium text-sidebar-foreground/60">Tema</p>
+        <p className="px-3.5 mb-1.5 text-[10px] uppercase tracking-wider font-medium text-sidebar-foreground/60">{t('theme')}</p>
         <div className="flex gap-1 px-1">
           {themeOptions.map(opt => (
             <button
@@ -109,7 +111,7 @@ export default function DashboardLayout() {
             className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs font-medium text-sidebar-foreground hover:text-sidebar-primary-foreground hover:bg-sidebar-accent transition-all"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            Página pública
+            {t('publicPage')}
           </button>
         </div>
       )}
@@ -121,10 +123,10 @@ export default function DashboardLayout() {
             {user?.name?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-primary-foreground truncate">{user?.name || 'Usuário'}</p>
+            <p className="text-sm font-medium text-sidebar-primary-foreground truncate">{user?.name || t('user')}</p>
             <p className="text-xs text-sidebar-foreground truncate">{user?.businessName}</p>
           </div>
-          <button onClick={handleLogout} className="p-1.5 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-destructive transition-colors" title="Sair">
+          <button onClick={handleLogout} className="p-1.5 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground hover:text-destructive transition-colors" title={t('logout')}>
             <LogOut className="w-4 h-4" />
           </button>
         </div>
@@ -162,7 +164,7 @@ export default function DashboardLayout() {
             <div className="flex items-center gap-2">
               <NotificationDropdown />
               <div className="text-sm text-muted-foreground hidden sm:block">
-                {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                {new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </div>
             </div>
           </div>
