@@ -154,6 +154,43 @@ export default function ConfiguracoesPage() {
         </div>
       </Card>
 
+      {/* Booking Page Style */}
+      <Card>
+        <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('bookingPageStyle')}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {([
+            { id: 'classic', label: 'Classic', desc: t('styleClassicDesc'), color: 'bg-primary' },
+            { id: 'minimal', label: 'Minimal', desc: t('styleMinimalDesc'), color: 'bg-foreground' },
+            { id: 'bold', label: 'Bold', desc: t('styleBoldDesc'), color: 'bg-primary' },
+            { id: 'elegant', label: 'Elegant', desc: t('styleElegantDesc'), color: 'bg-accent' },
+            { id: 'compact', label: 'Compact', desc: t('styleCompactDesc'), color: 'bg-secondary' },
+            { id: 'glass', label: 'Glass', desc: t('styleGlassDesc'), color: 'bg-primary/30' },
+            { id: 'playful', label: 'Playful', desc: t('stylePlayfulDesc'), color: 'bg-warning' },
+            { id: 'corporate', label: 'Corporate', desc: t('styleCorporateDesc'), color: 'bg-primary' },
+            { id: 'modern', label: 'Modern', desc: t('styleModernDesc'), color: 'bg-accent' },
+            { id: 'warm', label: 'Warm', desc: t('styleWarmDesc'), color: 'bg-warning/30' },
+          ] as { id: BookingStyle; label: string; desc: string; color: string }[]).map(style => (
+            <button
+              key={style.id}
+              type="button"
+              onClick={() => { setBookingStyle(style.id); toast.success(t('styleSaved')); }}
+              className={`relative rounded-xl border-2 p-3 text-left transition-all hover:shadow-md ${
+                bookingStyle === style.id ? 'border-primary shadow-md' : 'border-border hover:border-primary/30'
+              }`}
+            >
+              {bookingStyle === style.id && (
+                <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                  <Check className="w-3 h-3 text-primary-foreground" />
+                </div>
+              )}
+              <div className={`w-full h-8 rounded-lg mb-2 ${style.color}`} />
+              <p className="text-xs font-semibold text-foreground">{style.label}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{style.desc}</p>
+            </button>
+          ))}
+        </div>
+      </Card>
+
       {/* Business Info */}
       <Card>
         <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('businessInfo')}</h2>
