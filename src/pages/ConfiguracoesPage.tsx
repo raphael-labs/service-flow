@@ -1,18 +1,18 @@
 import { useState, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore, type Language } from '@/stores/languageStore';
-import { useBusinessImageStore } from '@/stores/businessImageStore';
+import { useBusinessImageStore, type BookingStyle } from '@/stores/businessImageStore';
 import Card from '@/components/Card';
 import FormInput from '@/components/FormInput';
 import FormSelect from '@/components/FormSelect';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Upload, X, Image } from 'lucide-react';
+import { Upload, X, Image, Check } from 'lucide-react';
 
 export default function ConfiguracoesPage() {
   const user = useAuthStore(s => s.user);
   const { language, setLanguage } = useLanguageStore();
-  const { logo, extraImage, setLogo, setExtraImage } = useBusinessImageStore();
+  const { logo, extraImage, bookingStyle, setLogo, setExtraImage, setBookingStyle } = useBusinessImageStore();
   const { t } = useTranslation();
   const logoInputRef = useRef<HTMLInputElement>(null);
   const extraInputRef = useRef<HTMLInputElement>(null);
