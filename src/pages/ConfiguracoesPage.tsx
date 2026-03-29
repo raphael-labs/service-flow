@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore, type Language } from '@/stores/languageStore';
+import { useBusinessImageStore } from '@/stores/businessImageStore';
 import Card from '@/components/Card';
 import FormInput from '@/components/FormInput';
 import FormSelect from '@/components/FormSelect';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Upload, X, Image } from 'lucide-react';
 
 export default function ConfiguracoesPage() {
   const user = useAuthStore(s => s.user);
   const { language, setLanguage } = useLanguageStore();
+  const { logo, extraImage, setLogo, setExtraImage } = useBusinessImageStore();
   const { t } = useTranslation();
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const extraInputRef = useRef<HTMLInputElement>(null);
 
   const [businessName, setBusinessName] = useState(user?.businessName || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -52,6 +57,22 @@ export default function ConfiguracoesPage() {
     { value: 'es', label: 'Español' },
   ];
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (img: string | null) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Max 2MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setter(reader.result as string);
+      toast.success(t('imageSaved'));
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <h1 className="page-header">{t('settings')}</h1>
@@ -66,6 +87,70 @@ export default function ConfiguracoesPage() {
             onChange={e => setLanguage(e.target.value as Language)}
             options={languageOptions}
           />
+        </div>
+      </Card>
+
+      {/* Business Images */}
+      <Card>
+        <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('businessImages')}</h2>
+        <div className="grid sm:grid-cols-2 gap-6">
+          {/* Logo */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground">{t('logo')}</label>
+            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, setLogo)} />
+            {logo ? (
+              <div className="relative group">
+                <div className="w-full aspect-square rounded-xl border border-border bg-card overflow-hidden flex items-center justify-center">
+                  <img src={logo} alt="Logo" className="max-w-full max-h-full object-contain" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setLogo(null); toast.success(t('imageRemoved')); }}
+                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/50 bg-card flex flex-col items-center justify-center gap-2 transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <Upload className="w-6 h-6" />
+                <span className="text-xs">{t('uploadImage')}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Extra Image */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground">{t('extraImage')}</label>
+            <input ref={extraInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, setExtraImage)} />
+            {extraImage ? (
+              <div className="relative group">
+                <div className="w-full aspect-square rounded-xl border border-border bg-card overflow-hidden flex items-center justify-center">
+                  <img src={extraImage} alt="Extra" className="max-w-full max-h-full object-contain" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setExtraImage(null); toast.success(t('imageRemoved')); }}
+                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => extraInputRef.current?.click()}
+                className="w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/50 bg-card flex flex-col items-center justify-center gap-2 transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <Image className="w-6 h-6" />
+                <span className="text-xs">{t('uploadImage')}</span>
+              </button>
+            )}
+          </div>
         </div>
       </Card>
 

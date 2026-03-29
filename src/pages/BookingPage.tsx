@@ -4,6 +4,7 @@ import FormInput from '@/components/FormInput';
 import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppointmentStore } from '@/stores/appointmentStore';
+import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Currency } from '@/types';
 
@@ -36,6 +37,7 @@ type Step = 'service' | 'datetime' | 'info' | 'done';
 export default function BookingPage() {
   const { slug } = useParams();
   const { appointments, addAppointment } = useAppointmentStore();
+  const { logo, extraImage } = useBusinessImageStore();
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -103,10 +105,22 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-background flex items-start justify-center pt-8 pb-12 px-4">
       <div className="w-full max-w-lg animate-fade-in">
+        {/* Header with logo & extra image */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
-            <Calendar className="w-6 h-6 text-primary-foreground" />
-          </div>
+          {extraImage && (
+            <div className="w-full h-32 rounded-xl overflow-hidden mb-4">
+              <img src={extraImage} alt="" className="w-full h-full object-cover" />
+            </div>
+          )}
+          {logo ? (
+            <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto mb-3 border border-border bg-card">
+              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+            </div>
+          ) : (
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
+              <Calendar className="w-6 h-6 text-primary-foreground" />
+            </div>
+          )}
           <h1 className="text-2xl font-bold font-heading text-foreground capitalize">
             {slug?.replace(/-/g, ' ') || t('business')}
           </h1>
