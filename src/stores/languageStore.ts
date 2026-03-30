@@ -8,12 +8,21 @@ interface LanguageStore {
   setLanguage: (lang: Language) => void;
 }
 
+const validLanguages: Language[] = ['pt', 'en', 'es'];
+
 export const useLanguageStore = create<LanguageStore>()(
   persist(
     (set) => ({
       language: 'pt',
-      setLanguage: (language) => set({ language }),
+      setLanguage: (language) => set({ language: validLanguages.includes(language) ? language : 'pt' }),
     }),
-    { name: 'satelite-language' }
+    {
+      name: 'satelite-language',
+      onRehydrateStorage: () => (state) => {
+        if (state && !validLanguages.includes(state.language)) {
+          state.language = 'pt';
+        }
+      },
+    }
   )
 );
