@@ -2,7 +2,8 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { translations, type TranslationKey } from '@/i18n/translations';
 
 export function useTranslation() {
-  const language = useLanguageStore(s => s.language);
+  const rawLang = useLanguageStore(s => s.language);
+  const language = (['pt', 'en', 'es'].includes(rawLang) ? rawLang : 'pt') as 'pt' | 'en' | 'es';
   
   function t(key: TranslationKey, replacements?: Record<string, string>): string {
     let text: string = translations[language][key] ?? translations.pt[key] ?? key;
