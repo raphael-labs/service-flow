@@ -12,6 +12,7 @@ export type Step = 'service' | 'datetime' | 'info' | 'done';
 export interface MockService {
   id: string;
   name: string;
+  description?: string;
   duration: number;
   price?: number;
   currency: Currency;
