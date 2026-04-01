@@ -558,7 +558,7 @@ export function CorporateStyle(p: StyleProps) {
                 <tbody>
                   {p.mockServices.map(s => (
                     <tr key={s.id} onClick={() => { p.setSelectedService(s.id); p.setStep('datetime'); }} className="border-b border-border hover:bg-accent/30 cursor-pointer transition-colors">
-                      <td className="py-3 text-sm text-foreground">{s.name}</td>
+                      <td className="py-3 text-sm text-foreground"><span>{s.name}</span>{s.description && <span className="block text-xs text-muted-foreground">{s.description}</span>}</td>
                       <td className="py-3 text-sm text-muted-foreground">{s.duration} min</td>
                       <td className="py-3 text-sm text-foreground text-right">{s.price != null ? `${formatCurrency(s.currency)} ${s.price}` : '-'}</td>
                     </tr>
