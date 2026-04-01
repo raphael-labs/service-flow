@@ -1,5 +1,5 @@
 import FormInput from '@/components/FormInput';
-import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
 import { formatCurrency, type MockService, type Step } from '@/hooks/useBookingLogic';
 
 interface StyleProps {
