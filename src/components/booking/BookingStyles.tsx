@@ -307,6 +307,7 @@ export function BoldStyle(p: StyleProps) {
                 className="bg-card rounded-2xl p-5 text-left hover:shadow-lg transition-all border-2 border-transparent hover:border-primary flex justify-between items-center">
                 <div>
                   <p className="text-base font-bold text-foreground">{s.name}</p>
+                  {s.description && <p className="text-sm text-muted-foreground mt-0.5">{s.description}</p>}
                   <p className="text-sm text-muted-foreground">{s.duration} min</p>
                 </div>
                 <div className="text-right">
