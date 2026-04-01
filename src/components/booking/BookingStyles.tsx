@@ -508,6 +508,7 @@ export function PlayfulStyle(p: StyleProps) {
                 className="w-full bg-card rounded-2xl p-4 text-left hover:scale-[1.02] transition-all shadow-sm border border-border flex justify-between items-center">
                 <div>
                   <p className="text-sm font-bold text-foreground">{s.name} 💈</p>
+                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
                   <p className="text-xs text-muted-foreground">{s.duration} min</p>
                 </div>
                 {s.price != null && <span className="bg-warning/10 text-warning px-2 py-1 rounded-full text-xs font-bold">{formatCurrency(s.currency)} {s.price}</span>}
