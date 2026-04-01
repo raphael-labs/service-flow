@@ -671,6 +671,7 @@ export function WarmStyle(p: StyleProps) {
                 className="w-full bg-card rounded-2xl p-4 text-left shadow-sm border border-warning/10 hover:border-warning/30 transition-all flex justify-between items-center">
                 <div>
                   <p className="text-sm font-medium text-foreground">{s.name}</p>
+                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
                   <p className="text-xs text-muted-foreground">{s.duration} min</p>
                 </div>
                 {s.price != null && <span className="text-sm font-semibold text-warning">{formatCurrency(s.currency)} {s.price}</span>}
