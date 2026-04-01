@@ -111,6 +111,9 @@ export function useBookingLogic() {
 
   return {
     slug, logo, extraImage, bookingStyle,
+    businessEmail: user?.email || '',
+    businessPhone: user?.phone || '',
+    businessAddress: user?.address || '',
     step, setStep,
     selectedService, setSelectedService,
     selectedDate, setSelectedDate,
