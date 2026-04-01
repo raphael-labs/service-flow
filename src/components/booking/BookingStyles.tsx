@@ -240,6 +240,7 @@ export function MinimalStyle(p: StyleProps) {
                 className="w-full text-left py-4 px-1 border-b border-border hover:bg-accent/30 transition-all flex justify-between items-center group">
                 <div>
                   <p className="text-sm text-foreground">{s.name}</p>
+                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
                   <p className="text-xs text-muted-foreground">{s.duration} min</p>
                 </div>
                 {s.price != null && <span className="text-sm text-muted-foreground">{formatCurrency(s.currency)} {s.price}</span>}
