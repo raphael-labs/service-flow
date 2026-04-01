@@ -6,6 +6,9 @@ interface StyleProps {
   slug?: string;
   logo: string | null;
   extraImage: string | null;
+  businessEmail: string;
+  businessPhone: string;
+  businessAddress: string;
   step: Step;
   setStep: (s: Step) => void;
   selectedService: string;
