@@ -99,6 +99,7 @@ export default function ServicosPage() {
                   return (
                   <tr key={s.id} className="border-b border-border last:border-0 hover:bg-secondary/50 transition-colors">
                     <td className="px-5 py-3.5 text-sm font-medium text-foreground">{s.name}</td>
+                    <td className="px-5 py-3.5 text-sm text-muted-foreground max-w-[200px] truncate">{s.description || '—'}</td>
                     <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.duration} min</td>
                     <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.price != null ? `${symbol} ${s.price.toFixed(2)}` : '—'}</td>
                     <td className="px-5 py-3.5 text-sm text-muted-foreground">{s.simultaneousSlots}</td>

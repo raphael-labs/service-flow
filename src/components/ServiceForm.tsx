@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import FormInput from './FormInput';
+import FormTextarea from './FormTextarea';
 import FormSelect from './FormSelect';
 import type { Currency } from '@/types';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ServiceFormData {
   name: string;
+  description?: string;
   duration: number;
   price?: number;
   currency: Currency;
@@ -20,6 +22,7 @@ interface ServiceFormProps {
 
 export default function ServiceForm({ initialData, onSubmit, onCancel }: ServiceFormProps) {
   const [name, setName] = useState(initialData?.name || '');
+  const [description, setDescription] = useState(initialData?.description || '');
   const [duration, setDuration] = useState(initialData?.duration || 30);
   const [priceStr, setPriceStr] = useState(initialData?.price != null ? String(initialData.price) : '');
   const [currency, setCurrency] = useState<Currency>(initialData?.currency || 'BRL');
@@ -35,12 +38,13 @@ export default function ServiceForm({ initialData, onSubmit, onCancel }: Service
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const price = priceStr.trim() !== '' ? Number(priceStr) : undefined;
-    onSubmit({ name, duration, price, currency, simultaneousSlots });
+    onSubmit({ name, description: description.trim() || undefined, duration, price, currency, simultaneousSlots });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormInput label={t('serviceName')} value={name} onChange={e => setName(e.target.value)} required />
+      <FormTextarea label={t('descriptionOptional')} value={description} onChange={e => setDescription(e.target.value)} placeholder={t('serviceDescPlaceholder')} rows={3} />
       <FormInput label={t('durationMinutes')} type="number" value={duration} onChange={e => setDuration(Number(e.target.value))} min={5} required />
       
       <div className="grid grid-cols-2 gap-3">
