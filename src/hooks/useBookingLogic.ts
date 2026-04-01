@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAppointmentStore } from '@/stores/appointmentStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Currency } from '@/types';
