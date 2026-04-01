@@ -14,6 +14,7 @@ import ServicosPage from '@/pages/ServicosPage';
 import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
 import BookingPage from '@/pages/BookingPage';
 import NotFound from '@/pages/NotFound';
+import AuthCallback from './pages/AuthCallback';
 
 const App = () => {
   const loadFromStorage = useAuthStore(s => s.loadFromStorage);
@@ -27,6 +28,8 @@ const App = () => {
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
           {/* Public booking */}
           <Route path="/booking/:slug" element={<BookingPage />} />
 
