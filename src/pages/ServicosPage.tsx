@@ -86,6 +86,7 @@ export default function ServicosPage() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="table-header text-left px-5 py-3">{t('service')}</th>
+                  <th className="table-header text-left px-5 py-3">{t('description')}</th>
                   <th className="table-header text-left px-5 py-3">{t('duration')}</th>
                   <th className="table-header text-left px-5 py-3">{t('price')}</th>
                   <th className="table-header text-left px-5 py-3">{t('simultaneous')}</th>
