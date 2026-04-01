@@ -76,11 +76,12 @@ const ServiceList = ({ services, selectedService, onSelect, t }: { services: Moc
     {services.map(s => (
       <button key={s.id} onClick={() => onSelect(s.id)}
         className={`w-full card-elevated p-4 text-left hover:border-primary/30 transition-all flex items-center justify-between ${selectedService === s.id ? 'border-primary bg-accent/50' : ''}`}>
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground">{s.name}</p>
+          {s.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.description}</p>}
           <p className="text-xs text-muted-foreground mt-0.5">{s.duration} min</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-3 shrink-0">
           {s.price != null && <span className="text-sm font-semibold text-foreground">{formatCurrency(s.currency)} {s.price}</span>}
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
         </div>
@@ -88,6 +89,26 @@ const ServiceList = ({ services, selectedService, onSelect, t }: { services: Moc
     ))}
   </div>
 );
+
+const BookingFooter = ({ businessEmail, businessPhone, businessAddress }: { businessEmail: string; businessPhone: string; businessAddress: string }) => {
+  const hasInfo = businessEmail || businessPhone || businessAddress;
+  if (!hasInfo) return null;
+  return (
+    <div className="border-t border-border mt-10 pt-6 pb-4">
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+        {businessPhone && (
+          <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{businessPhone}</span>
+        )}
+        {businessEmail && (
+          <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{businessEmail}</span>
+        )}
+        {businessAddress && (
+          <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3" />{businessAddress}</span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const DateGrid = ({ dates, selectedDate, onSelect, locale }: { dates: Date[]; selectedDate: string; onSelect: (d: string) => void; locale: string }) => (
   <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
