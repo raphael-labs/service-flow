@@ -50,6 +50,7 @@ export function formatCurrency(currency: Currency) {
 export function useBookingLogic() {
   const { slug } = useParams();
   const { appointments, addAppointment } = useAppointmentStore();
+  const user = useAuthStore(s => s.user);
   const { logo, extraImage, bookingStyle } = useBusinessImageStore();
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState('');
