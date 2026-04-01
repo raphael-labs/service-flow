@@ -415,6 +415,7 @@ export function CompactStyle(p: StyleProps) {
               <button key={s.id} onClick={() => { p.setSelectedService(s.id); p.setStep('datetime'); }}
                 className="card-elevated p-3 text-left hover:border-primary/30 transition-all">
                 <p className="text-sm font-medium text-foreground">{s.name}</p>
+                {s.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.description}</p>}
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xs text-muted-foreground">{s.duration} min</span>
                   {s.price != null && <span className="text-xs font-semibold text-primary">{formatCurrency(s.currency)} {s.price}</span>}
