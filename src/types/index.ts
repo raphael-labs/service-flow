@@ -13,6 +13,7 @@ export type Currency = 'BRL' | 'USD' | 'EUR';
 export interface Service {
   id: string;
   name: string;
+  description?: string;
   duration: number; // minutes
   price?: number;
   currency: Currency;

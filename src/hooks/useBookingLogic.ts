@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAppointmentStore } from '@/stores/appointmentStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Currency } from '@/types';
@@ -11,6 +12,7 @@ export type Step = 'service' | 'datetime' | 'info' | 'done';
 export interface MockService {
   id: string;
   name: string;
+  description?: string;
   duration: number;
   price?: number;
   currency: Currency;
@@ -18,10 +20,10 @@ export interface MockService {
 }
 
 const mockServices: MockService[] = [
-  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '2', name: 'Barba', duration: 30, price: 30, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '3', name: 'Corte + Barba', duration: 60, price: 65, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '4', name: 'Hidratação', duration: 45, price: 55, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '1', name: 'Corte de Cabelo', description: 'Corte masculino moderno com acabamento perfeito', duration: 30, price: 45, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '2', name: 'Barba', description: 'Barba feita com navalha e toalha quente', duration: 30, price: 30, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '3', name: 'Corte + Barba', description: 'Combo completo de corte e barba', duration: 60, price: 65, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '4', name: 'Hidratação', description: 'Tratamento capilar com hidratação profunda', duration: 45, price: 55, currency: 'BRL', simultaneousSlots: 1 },
 ];
 
 const allSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
@@ -48,6 +50,7 @@ export function formatCurrency(currency: Currency) {
 export function useBookingLogic() {
   const { slug } = useParams();
   const { appointments, addAppointment } = useAppointmentStore();
+  const user = useAuthStore(s => s.user);
   const { logo, extraImage, bookingStyle } = useBusinessImageStore();
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState('');
@@ -108,6 +111,9 @@ export function useBookingLogic() {
 
   return {
     slug, logo, extraImage, bookingStyle,
+    businessEmail: user?.email || '',
+    businessPhone: user?.phone || '',
+    businessAddress: user?.address || '',
     step, setStep,
     selectedService, setSelectedService,
     selectedDate, setSelectedDate,
