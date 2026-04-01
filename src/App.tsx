@@ -15,12 +15,40 @@ import ConfiguracoesPage from '@/pages/ConfiguracoesPage';
 import BookingPage from '@/pages/BookingPage';
 import NotFound from '@/pages/NotFound';
 import AuthCallback from './pages/AuthCallback';
+import { supabase } from '@/lib/supabase';
 
 const App = () => {
-  const loadFromStorage = useAuthStore(s => s.loadFromStorage);
+  //const loadFromStorage = useAuthStore(s => s.loadFromStorage);
+
+  const setUser = useAuthStore(s => s.setUser);
+  const logout = useAuthStore(s => s.logout);
+
+  /*useEffect(() => {
+    loadFromStorage();
+  }, []);*/
 
   useEffect(() => {
-    loadFromStorage();
+    // pega sessão atual ao carregar
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setUser(data.session.user);
+      }
+    });
+
+    // escuta login, logout, callback
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session) {
+          setUser(session.user);
+        } else {
+          logout();
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (

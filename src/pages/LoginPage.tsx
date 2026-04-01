@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FormInput from '@/components/FormInput';
-import { mockLogin } from '@/stores/authStore';
+//import { mockLogin } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function LoginPage() {
@@ -11,13 +12,28 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /*const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
       mockLogin(email, password);
       navigate('/dashboard');
     }, 500);
+  };*/
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setLoading(false);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    navigate('/dashboard');
   };
 
   return (
