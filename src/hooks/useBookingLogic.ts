@@ -20,10 +20,10 @@ export interface MockService {
 }
 
 const mockServices: MockService[] = [
-  { id: '1', name: 'Corte de Cabelo', duration: 30, price: 45, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '2', name: 'Barba', duration: 30, price: 30, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '3', name: 'Corte + Barba', duration: 60, price: 65, currency: 'BRL', simultaneousSlots: 1 },
-  { id: '4', name: 'Hidratação', duration: 45, price: 55, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '1', name: 'Corte de Cabelo', description: 'Corte masculino moderno com acabamento perfeito', duration: 30, price: 45, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '2', name: 'Barba', description: 'Barba feita com navalha e toalha quente', duration: 30, price: 30, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '3', name: 'Corte + Barba', description: 'Combo completo de corte e barba', duration: 60, price: 65, currency: 'BRL', simultaneousSlots: 1 },
+  { id: '4', name: 'Hidratação', description: 'Tratamento capilar com hidratação profunda', duration: 45, price: 55, currency: 'BRL', simultaneousSlots: 1 },
 ];
 
 const allSlots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
