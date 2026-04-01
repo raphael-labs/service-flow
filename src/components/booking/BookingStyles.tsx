@@ -575,7 +575,7 @@ export function CorporateStyle(p: StyleProps) {
               </div>
             )}
             {p.step === 'done' && <DoneBlock {...p} />}
-          </div>
+            <BookingFooter businessEmail={p.businessEmail} businessPhone={p.businessPhone} businessAddress={p.businessAddress} />
         </div>
       </div>
     </div>
