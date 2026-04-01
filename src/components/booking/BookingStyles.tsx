@@ -367,6 +367,7 @@ export function ElegantStyle(p: StyleProps) {
                 className="w-full py-4 px-4 text-left hover:bg-accent/30 rounded-lg transition-all flex justify-between items-center border border-transparent hover:border-border">
                 <div>
                   <p className="text-sm text-foreground font-medium tracking-wide">{s.name}</p>
+                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
                   <p className="text-xs text-muted-foreground mt-0.5">{s.duration} min</p>
                 </div>
                 {s.price != null && <span className="text-sm text-foreground">{formatCurrency(s.currency)} {s.price}</span>}
