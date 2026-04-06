@@ -36,8 +36,13 @@ export default function DashboardPage() {
       // 🔥 AGENDAMENTOS
       const { data: appointmentsData, error: apptError } = await supabase
         .from("agendamentos")
-        .select("*")
-        .eq("empresa_id", empresaId);
+        .select(`
+          *,
+          clientes ( name ),
+          servicos ( name, duracao )
+        `)
+        .eq("empresa_id", empresaId)
+        .order("data_hora", { ascending: true });
 
       if (apptError) throw apptError;
 
@@ -102,9 +107,19 @@ export default function DashboardPage() {
   // 🔥 PROCESSAMENTO
   const todayStr = new Date().toISOString().split('T')[0];
 
-  const todayAppointments = appointments.filter(
+  /*const todayAppointments = appointments.filter(
     (a: any) => a.date === todayStr
-  );
+  );*/
+
+  const todayAppointments = appointments.filter((a: any) => {
+    if (!a.data_hora) return false;
+
+    const appointmentDate = new Date(a.data_hora)
+      .toISOString()
+      .split('T')[0];
+
+    return appointmentDate === todayStr;
+  });
 
   const stats = [
     {
