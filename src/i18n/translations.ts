@@ -86,6 +86,7 @@ export const translations = {
     errorLoadingClients: 'Erro ao carregar clientes.',
     name: 'Nome',
     phone: 'Telefone',
+    birthDate: "Data de nascimento",
 
     // Services
     newService: 'Novo Serviço',
@@ -273,6 +274,7 @@ export const translations = {
     errorLoadingClients: 'Error loading clients.',
     name: 'Name',
     phone: 'Phone',
+    birthDate: "Birth Date",
 
     newService: 'New Service',
     addService: 'Add Service',
@@ -454,6 +456,7 @@ export const translations = {
     errorLoadingClients: 'Error al cargar clientes.',
     name: 'Nombre',
     phone: 'Teléfono',
+    birthDate: "Fecha de nacimiento",
 
     newService: 'Nuevo Servicio',
     addService: 'Agregar Servicio',
