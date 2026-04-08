@@ -8,12 +8,17 @@ import FormSelect from '@/components/FormSelect';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Upload, X, Image, Check } from 'lucide-react';
+import { supabase } from "@/lib/supabase";
+import { getEmpresaId } from "@/lib/getEmpresaId";
+import { useEffect } from 'react';
+
 
 export default function ConfiguracoesPage() {
   const user = useAuthStore(s => s.user);
   const { language, setLanguage } = useLanguageStore();
-  const { logo, extraImage, bookingStyle, setLogo, setExtraImage, setBookingStyle } = useBusinessImageStore();
+  const { logo, extraImage, bookingStyle, setBookingStyle, setLogo, setExtraImage } = useBusinessImageStore();
   const { t } = useTranslation();
+
   const logoInputRef = useRef<HTMLInputElement>(null);
   const extraInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,13 +26,175 @@ export default function ConfiguracoesPage() {
   const [phone, setPhone] = useState(user?.phone || '');
   const [email, setEmail] = useState(user?.email || '');
   const [address, setAddress] = useState(user?.address || '');
+  const [slug, setSlug] = useState(user?.slug || '');
 
-  const [activeDays, setActiveDays] = useState<string[]>(['1', '2', '3', '4', '5', '6']);
-  const [startTime, setStartTime] = useState('08:00');
-  const [endTime, setEndTime] = useState('18:00');
-  const [slotDuration, setSlotDuration] = useState('30');
+  // 🔥 MAPA DE ESTILO (BANCO)
+  const styleMap: Record<BookingStyle, number> = {
+    classic: 1,
+    minimal: 2,
+    bold: 3,
+    elegant: 4,
+    compact: 5,
+    glass: 6,
+    playful: 7,
+    corporate: 8,
+    modern: 9,
+    warm: 10,
+  };
 
-  const dayKeys: { value: string; key: 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun' }[] = [
+  // 🔥 SCHEDULE POR DIA
+  const [schedule, setSchedule] = useState<Record<string, {
+    active: boolean;
+    start: string;
+    end: string;
+    slot: string;
+    simultaneo: string;
+  }>>({
+    '1': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '2': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '3': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '4': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '5': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '6': { active: true, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+    '0': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+  });
+
+  /*useEffect(() => {
+    const loadData = async () => {
+      try {
+        const empresaId = await getEmpresaId();
+
+        const { data } = await supabase
+          .from("empresas")
+          .select("*")
+          .eq("id", empresaId)
+          .single();
+
+        if (!data) return;
+
+        // 🔥 preenche estados
+        setBusinessName(data.name || '');
+        setPhone(data.telefone || '');
+        setEmail(data.email || '');
+        setAddress(data.endereco || '');
+        setSlug(data.slug || '');
+
+        // idioma
+        if (data.idioma) setLanguage(data.idioma);
+
+        // imagens
+        if (data.path_img_logo) setLogo(data.path_img_logo);
+        if (data.path_img_bg) setExtraImage(data.path_img_bg);
+
+        // estilo
+        const reverseStyleMap: Record<number, BookingStyle> = {
+          1: 'classic',
+          2: 'minimal',
+          3: 'bold',
+          4: 'elegant',
+          5: 'compact',
+          6: 'glass',
+          7: 'playful',
+          8: 'corporate',
+          9: 'modern',
+          10: 'warm'
+        };
+
+        if (data.pg_estilo) {
+          setBookingStyle(reverseStyleMap[data.pg_estilo]);
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadData();
+  }, []);*/
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const empresaId = await getEmpresaId();
+
+        // 🔥 EMPRESA
+        const { data } = await supabase
+          .from("empresas")
+          .select("*")
+          .eq("id", empresaId)
+          .single();
+
+        if (!data) return;
+
+        setBusinessName(data.name || '');
+        setPhone(data.telefone || '');
+        setEmail(data.email || '');
+        setAddress(data.endereco || '');
+        setSlug(data.slug || '');
+
+        if (data.idioma) setLanguage(data.idioma);
+
+        if (data.path_img_logo) setLogo(data.path_img_logo);
+        if (data.path_img_bg) setExtraImage(data.path_img_bg);
+
+        const reverseStyleMap: Record<number, BookingStyle> = {
+          1: 'classic',
+          2: 'minimal',
+          3: 'bold',
+          4: 'elegant',
+          5: 'compact',
+          6: 'glass',
+          7: 'playful',
+          8: 'corporate',
+          9: 'modern',
+          10: 'warm'
+        };
+
+        if (data.pg_estilo) {
+          setBookingStyle(reverseStyleMap[data.pg_estilo]);
+        }
+
+        // 🔥🔥🔥 AQUI ESTÁ O QUE FALTAVA 🔥🔥🔥
+
+        const { data: dias } = await supabase
+          .from("dias_semanais")
+          .select("*")
+          .eq("empresa_id", empresaId);
+
+        // monta estrutura padrão
+        const defaultSchedule = {
+          '1': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '2': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '3': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '4': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '5': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '6': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+          '0': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
+        };
+
+        if (dias && dias.length > 0) {
+          dias.forEach(d => {
+            defaultSchedule[String(d.dia_semana)] = {
+              active: true,
+              start: d.hora_inicio?.slice(0, 5) || '08:00',
+              end: d.hora_fim?.slice(0, 5) || '18:00',
+              slot: String(d.slot_minimo || 30),
+              simultaneo: String(d.serv_simultaneo || 1),
+            };
+          });
+        }
+
+        setSchedule(defaultSchedule);
+
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const dayKeys = [
     { value: '1', key: 'mon' },
     { value: '2', key: 'tue' },
     { value: '3', key: 'wed' },
@@ -37,58 +204,176 @@ export default function ConfiguracoesPage() {
     { value: '0', key: 'sun' },
   ];
 
-  const toggleDay = (day: string) => {
-    setActiveDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]);
+  const updateDay = (day: string, field: string, value: any) => {
+    setSchedule(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [field]: value
+      }
+    }));
   };
 
-  const handleSaveBusiness = (e: React.FormEvent) => {
+  // 🔥 SALVAR EMPRESA
+  const handleSaveBusiness = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(t('infoSaved'));
+
+    try {
+      const empresaId = await getEmpresaId();
+
+      await supabase
+        .from("empresas")
+        .update({
+          name: businessName,
+          telefone: phone,
+          email,
+          endereco: address,
+          slug
+        })
+        .eq("id", empresaId);
+
+      toast.success(t('infoSaved'));
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao salvar");
+    }
   };
 
-  const handleSaveSchedule = (e: React.FormEvent) => {
+  // 🔥 SALVAR AGENDA
+  const handleSaveSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(t('scheduleSaved'));
+
+    try {
+      const empresaId = await getEmpresaId();
+
+      await supabase
+        .from("dias_semanais")
+        .delete()
+        .eq("empresa_id", empresaId);
+
+      const inserts = Object.entries(schedule)
+        .filter(([_, d]) => d.active)
+        .map(([dia, d]) => ({
+          empresa_id: empresaId,
+          dia_semana: Number(dia),
+          hora_inicio: d.start,
+          hora_fim: d.end,
+          slot_minimo: Number(d.slot),
+          serv_simultaneo: Number(d.simultaneo)
+        }));
+
+      if (inserts.length > 0) {
+        await supabase.from("dias_semanais").insert(inserts);
+      }
+
+      toast.success(t('scheduleSaved'));
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao salvar agenda");
+    }
   };
 
-  const languageOptions = [
-    { value: 'pt', label: 'Português' },
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Español' },
-  ];
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (img: string | null) => void) => {
+  // 🔥 UPLOAD 
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "logo" | "bg"
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Max 2MB');
+      toast.error("Max 2MB");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setter(reader.result as string);
-      toast.success(t('imageSaved'));
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
+
+    try {
+      const empresaId = await getEmpresaId();
+
+      // 🔥 define caminho fixo
+      const filePath = `${empresaId}/${type}.png`;
+
+      // 🔥 tenta deletar imagem antiga (se existir)
+      await supabase.storage
+        .from("imagens")
+        .remove([filePath]);
+
+      // 🔥 upload novo arquivo
+      const { error: uploadError } = await supabase.storage
+        .from("imagens")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 🔥 URL pública
+      const { data } = supabase.storage
+        .from("imagens")
+        .getPublicUrl(filePath);
+
+      const publicUrl = data.publicUrl;
+
+      // 🔥 salva no banco
+      const field =
+        type === "logo" ? "path_img_logo" : "path_img_bg";
+
+      await supabase
+        .from("empresas")
+        .update({ [field]: publicUrl })
+        .eq("id", empresaId);
+
+      // 🔥 atualiza UI
+      if (type === "logo") setLogo(publicUrl);
+      else setExtraImage(publicUrl);
+
+      toast.success(t("imageSaved"));
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao fazer upload");
+    }
+
+    e.target.value = "";
   };
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <h1 className="page-header">{t('settings')}</h1>
 
-      {/* Language */}
+      {/* LANGUAGE */}
       <Card>
-        <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('language')}</h2>
-        <div className="max-w-xs">
-          <FormSelect
-            label={t('language')}
-            value={language}
-            onChange={e => setLanguage(e.target.value as Language)}
-            options={languageOptions}
-          />
-        </div>
+        <FormSelect
+          label={t('language')}
+          value={language}
+          onChange={async e => {
+            const value = e.target.value as Language;
+            setLanguage(value);
+
+            try {
+              const empresaId = await getEmpresaId();
+
+              await supabase
+                .from("empresas")
+                .update({ idioma: value })
+                .eq("id", empresaId);
+
+            } catch (err) {
+              console.error(err);
+            }
+          }}
+          options={[
+            { value: 'pt', label: 'Português' },
+            { value: 'en', label: 'English' },
+            { value: 'es', label: 'Español' },
+          ]}
+        />
       </Card>
+
+      {/* IMAGENS */}
+
 
       {/* Business Images */}
       <Card>
@@ -97,7 +382,7 @@ export default function ConfiguracoesPage() {
           {/* Logo */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">{t('logo')}</label>
-            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, setLogo)} />
+            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, "logo")} />
             {logo ? (
               <div className="relative group">
                 <div className="w-full aspect-square rounded-xl border border-border bg-card overflow-hidden flex items-center justify-center">
@@ -126,7 +411,7 @@ export default function ConfiguracoesPage() {
           {/* Extra Image */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">{t('extraImage')}</label>
-            <input ref={extraInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, setExtraImage)} />
+            <input ref={extraInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, "bg")} />
             {extraImage ? (
               <div className="relative group">
                 <div className="w-full aspect-square rounded-xl border border-border bg-card overflow-hidden flex items-center justify-center">
@@ -173,10 +458,37 @@ export default function ConfiguracoesPage() {
             <button
               key={style.id}
               type="button"
-              onClick={() => { setBookingStyle(style.id); toast.success(t('styleSaved')); }}
-              className={`relative rounded-xl border-2 p-3 text-left transition-all hover:shadow-md ${
-                bookingStyle === style.id ? 'border-primary shadow-md' : 'border-border hover:border-primary/30'
-              }`}
+              onClick={async () => {
+                setBookingStyle(style.id); // mantém comportamento atual
+                try {
+                  const empresaId = await getEmpresaId();
+                  const styleMap: Record<string, number> = {
+                    classic: 1,
+                    minimal: 2,
+                    bold: 3,
+                    elegant: 4,
+                    compact: 5,
+                    glass: 6,
+                    playful: 7,
+                    corporate: 8,
+                    modern: 9,
+                    warm: 10
+                  };
+
+                  await supabase
+                    .from("empresas")
+                    .update({ pg_estilo: styleMap[style.id] })
+                    .eq("id", empresaId);
+
+                  toast.success(t('styleSaved'));
+
+                } catch (err) {
+                  console.error(err);
+                  toast.error("Erro ao salvar estilo");
+                }
+              }}
+              className={`relative rounded-xl border-2 p-3 text-left transition-all hover:shadow-md ${bookingStyle === style.id ? 'border-primary shadow-md' : 'border-border hover:border-primary/30'
+                }`}
             >
               {bookingStyle === style.id && (
                 <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
@@ -191,81 +503,78 @@ export default function ConfiguracoesPage() {
         </div>
       </Card>
 
-      {/* Business Info */}
+      {/* BUSINESS INFO */}
       <Card>
-        <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('businessInfo')}</h2>
         <form onSubmit={handleSaveBusiness} className="space-y-4">
           <FormInput label={t('companyName')} value={businessName} onChange={e => setBusinessName(e.target.value)} />
+
           <div className="grid sm:grid-cols-2 gap-4">
             <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} />
-            <FormInput label={t('email')} type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            <FormInput label={t('email')} value={email} onChange={e => setEmail(e.target.value)} />
           </div>
+
           <FormInput label={t('address')} value={address} onChange={e => setAddress(e.target.value)} />
-          <div className="pt-1">
-            <button type="submit" className="btn-primary text-sm">{t('saveInfo')}</button>
-          </div>
+          <FormInput label='Slug' value={slug} onChange={e => setSlug(e.target.value)} />
+
+          <button className="btn-primary">{t('saveInfo')}</button>
         </form>
       </Card>
 
-      {/* Schedule Config */}
+      {/* SCHEDULE */}
       <Card>
         <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('scheduleConfig')}</h2>
+
+        {/* Public link info */}
+        <div className="bg-accent/50 rounded-lg p-4 mb-6">
+          <p className="text-xs font-medium text-foreground mb-1">{t('publicBookingLink')}</p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 text-xs bg-card rounded px-3 py-2 text-muted-foreground border border-border truncate">
+              {window.location.origin}/booking/{slug || 'seu-negocio'}
+            </code>
+            <button
+              type="button"
+              onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/booking/${user?.slug}`); toast.success(t('linkCopied')); }}
+              className="btn-outline text-xs px-3 py-2 shrink-0"
+            >
+              {t('copy')}
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSaveSchedule} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">{t('workingDays')}</label>
-            <div className="flex flex-wrap gap-2">
-              {dayKeys.map(day => (
-                <button
-                  key={day.value}
-                  type="button"
-                  onClick={() => toggleDay(day.value)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    activeDays.includes(day.value)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-muted-foreground hover:bg-muted'
-                  }`}
-                >
-                  {t(day.key)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <FormInput label={t('start')} type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
-            <FormInput label={t('end')} type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
-            <FormSelect
-              label={t('slotDuration')}
-              value={slotDuration}
-              onChange={e => setSlotDuration(e.target.value)}
-              options={[
-                { value: '15', label: '15 min' },
-                { value: '30', label: '30 min' },
-                { value: '45', label: '45 min' },
-                { value: '60', label: '60 min' },
-              ]}
-            />
-          </div>
 
-          {/* Public link info */}
-          <div className="bg-accent/50 rounded-lg p-4">
-            <p className="text-xs font-medium text-foreground mb-1">{t('publicBookingLink')}</p>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs bg-card rounded px-3 py-2 text-muted-foreground border border-border truncate">
-                {window.location.origin}/booking/{user?.slug || 'seu-negocio'}
-              </code>
-              <button
-                type="button"
-                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/booking/${user?.slug}`); toast.success(t('linkCopied')); }}
-                className="btn-outline text-xs px-3 py-2 shrink-0"
-              >
-                {t('copy')}
-              </button>
-            </div>
-          </div>
+          {dayKeys.map(day => {
+            const d = schedule[day.value];
 
-          <div className="pt-1">
-            <button type="submit" className="btn-primary text-sm">{t('saveSchedule')}</button>
-          </div>
+            return (
+              <div key={day.value} className="border p-3 rounded-lg space-y-2">
+
+                <div className="flex justify-between">
+                  <span>{t(day.key)}</span>
+                  <button type="button" onClick={() => updateDay(day.value, 'active', !d.active)}>
+                    {d.active ? 'Ativo' : 'Inativo'}
+                  </button>
+                </div>
+
+                {d.active && (
+                  <div className="grid sm:grid-cols-4 gap-3">
+                    <FormInput label="Início" type="time" value={d.start} onChange={e => updateDay(day.value, 'start', e.target.value)} />
+                    <FormInput label="Fim" type="time" value={d.end} onChange={e => updateDay(day.value, 'end', e.target.value)} />
+                    <FormInput label="Slot (minutos)" type="number" value={d.slot} onChange={e => updateDay(day.value, 'slot', e.target.value)} />
+
+                    <FormInput
+                      label="Simultâneos"
+                      type="number"
+                      value={d.simultaneo}
+                      onChange={e => updateDay(day.value, 'simultaneo', e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          <button className="btn-primary">{t('saveSchedule')}</button>
         </form>
       </Card>
     </div>
