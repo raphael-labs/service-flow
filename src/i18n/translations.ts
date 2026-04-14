@@ -69,6 +69,7 @@ export const translations = {
     timeConflict: '⚠️ Este horário conflita com outro agendamento. Escolha um horário diferente.',
     timeConflictToast: 'Este horário conflita com outro agendamento existente.',
     appointmentCreated: 'Agendamento criado com sucesso!',
+    appointmentUpdated: 'Agendamento atualizado com sucesso!',
     schedule: 'Agendar',
 
     // Clients
@@ -258,6 +259,7 @@ export const translations = {
     timeConflict: '⚠️ This time conflicts with another appointment. Choose a different time.',
     timeConflictToast: 'This time conflicts with an existing appointment.',
     appointmentCreated: 'Appointment created successfully!',
+    appointmentUpdated: 'Appointment updated successfully!',
     schedule: 'Book',
 
     newClient: 'New Client',
@@ -440,6 +442,7 @@ export const translations = {
     timeConflict: '⚠️ Este horario tiene conflicto con otra cita. Elige otro horario.',
     timeConflictToast: 'Este horario tiene conflicto con una cita existente.',
     appointmentCreated: '¡Cita creada con éxito!',
+    appointmentUpdated: '¡Cita actualizada con éxito!',
     schedule: 'Agendar',
 
     newClient: 'Nuevo Cliente',
