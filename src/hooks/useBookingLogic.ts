@@ -56,6 +56,7 @@ export function useBookingLogic() {
   const [services, setServices] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [diasSemana, setDiasSemana] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState('');
@@ -66,60 +67,38 @@ export function useBookingLogic() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
-  // 🔥 LOAD REAL
-  /*useEffect(() => {
-    async function load() {
-      const { data: emp } = await supabase
-        .from('empresas')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-      if (!emp) return;
-
-      setEmpresa(emp);
-      setLogo(emp.path_img_logo);
-      setExtraImage(emp.path_img_bg);
-      setBookingStyle(emp.pg_estilo);
-
-      const empresaId = emp.id;
-
-      const { data: srv } = await supabase
-        .from('servicos')
-        .select('*')
-        .eq('empresa_id', empresaId);
-
-      const { data: ag } = await supabase
-        .from('agendamentos')
-        .select('*')
-        .eq('empresa_id', empresaId);
-
-      const { data: dias } = await supabase
-        .from('dias_semanais')
-        .select('*')
-        .eq('empresa_id', empresaId);
-
-      setServices(srv || []);
-      setAppointments(ag || []);
-      setDiasSemana(dias || []);
-    }
-
-    load();
-  }, [slug]);*/
-
+  // 🔥 LOAD API
   useEffect(() => {
     async function load() {
-      const res = await fetch(`/api/booking?slug=${slug}`);
-      const data = await res.json();
+      try {
+        setLoading(true);
 
-      setEmpresa(data.empresa);
-      setServices(data.servicos);
-      setDiasSemana(data.dias);
-      setAppointments(data.agendamentos);
+        const res = await fetch(`/api/booking?slug=${slug}`);
+        const data = await res.json();
 
-      setLogo(data.empresa.logo);
-      setExtraImage(data.empresa.bg);
-      setBookingStyle(mapStyle(empresa.pg_estilo));
+        if (!data?.empresa) {
+          console.error('Empresa não encontrada');
+          setLoading(false);
+          return;
+        }
+
+        const emp = data.empresa;
+
+        setEmpresa(emp);
+        setServices(data.servicos || []);
+        setDiasSemana(data.dias || []);
+        setAppointments(data.agendamentos || []);
+
+        // 🔥 CORRETO (usa emp, não estado)
+        setLogo(emp.path_img_logo || null);
+        setExtraImage(emp.path_img_bg || null);
+        setBookingStyle(mapStyle(emp.pg_estilo));
+
+      } catch (err) {
+        console.error('Erro ao carregar booking:', err);
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();
@@ -174,7 +153,6 @@ export function useBookingLogic() {
 
       const fullDate = new Date(`${selectedDate}T${time}:00`);
 
-      // 🔥 REGRA ANTECEDÊNCIA
       if (fullDate < minTime) continue;
 
       const slotStart = m;
@@ -193,10 +171,8 @@ export function useBookingLogic() {
         return slotStart < aEnd && slotEnd > aStart;
       });
 
-      // 🔥 LIMITE DIA
       if (overlapping.length >= config.serv_simultaneo) continue;
 
-      // 🔥 LIMITE SERVIÇO
       const sameService = overlapping.filter(a => a.servico_id === service.id);
 
       if (sameService.length >= service.simultaneo) continue;
@@ -238,14 +214,20 @@ export function useBookingLogic() {
     setEmail('');
   };
 
+  // 🔥 🔥 🔥 PROTEÇÃO PRINCIPAL
+  if (loading || !empresa) {
+    return { loading: true };
+  }
+
   return {
+    loading: false,
     slug,
-    logo: empresa?.path_img_logo || null,
-    extraImage: empresa?.path_img_bg || null,
-    bookingStyle: empresa?.pg_estilo || 'classic',
-    businessEmail: empresa?.email || '',
-    businessPhone: empresa?.telefone || '',
-    businessAddress: empresa?.endereco || '',
+    logo,
+    extraImage,
+    bookingStyle, // 🔥 AGORA VEM DO STORE (correto)
+    businessEmail: empresa.email || '',
+    businessPhone: empresa.telefone || '',
+    businessAddress: empresa.endereco || '',
     step,
     setStep,
     selectedService,
@@ -261,7 +243,7 @@ export function useBookingLogic() {
     email,
     setEmail,
     service,
-    mockServices: services, // 🔥 agora é real
+    mockServices: services,
     availableSlots,
     dates,
     handleConfirm,

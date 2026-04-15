@@ -20,6 +20,14 @@ const styleMap: Record<BookingStyle, React.FC<any>> = {
 
 export default function BookingPage() {
   const props = useBookingLogic();
+
+  if (props.loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Carregando ...
+      </div>
+    );
+  }
   const StyleComponent = styleMap[props.bookingStyle] || ClassicStyle;
   return <StyleComponent {...props} />;
 }
