@@ -78,11 +78,11 @@ const ServiceList = ({ services, selectedService, onSelect, t }: { services: Moc
         className={`w-full card-elevated p-4 text-left hover:border-primary/30 transition-all flex items-center justify-between ${selectedService === s.id ? 'border-primary bg-accent/50' : ''}`}>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground">{s.name}</p>
-          {s.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.description}</p>}
-          <p className="text-xs text-muted-foreground mt-0.5">{s.duration} min</p>
+          {s.descricao && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.descricao}</p>}
+          <p className="text-xs text-muted-foreground mt-0.5">{s.duracao} min</p>
         </div>
         <div className="flex items-center gap-2 ml-3 shrink-0">
-          {s.price != null && <span className="text-sm font-semibold text-foreground">{formatCurrency(s.currency)} {s.price}</span>}
+          {s.preco != null && <span className="text-sm font-semibold text-foreground">{formatCurrency(s.moeda)} {s.preco}</span>}
           <ArrowRight className="w-4 h-4 text-muted-foreground" />
         </div>
       </button>
@@ -148,7 +148,7 @@ const SummaryCard = ({ service, selectedDate, selectedTime, locale, t }: { servi
       {new Date(selectedDate + 'T12:00:00').toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })}
     </p>
     <p className="text-xs text-muted-foreground flex items-center gap-1">
-      <Clock className="w-3 h-3" />{selectedTime} · {service?.duration}min
+      <Clock className="w-3 h-3" />{selectedTime} · {service?.duracao}min
     </p>
   </div>
 );
@@ -198,7 +198,7 @@ export function ClassicStyle(p: StyleProps) {
               <button onClick={() => p.setStep('service')} className="btn-ghost p-2"><ArrowLeft className="w-4 h-4" /></button>
               <h2 className="text-base font-semibold text-foreground">{p.t('chooseDatetime')}</h2>
             </div>
-            {p.service && <div className="badge-primary text-xs">{p.service.name} · {p.service.duration}min{p.service.price != null && ` · ${formatCurrency(p.service.currency)}${p.service.price}`}</div>}
+            {p.service && <div className="badge-primary text-xs">{p.service.name} · {p.service.duracao}min{p.service.preco != null && ` · ${formatCurrency(p.service.moeda)}${p.service.preco}`}</div>}
             <div><p className="text-sm font-medium text-foreground mb-2">{p.t('dateLabel')}</p><DateGrid dates={p.dates} selectedDate={p.selectedDate} onSelect={p.setSelectedDate} locale={p.locale} /></div>
             {p.selectedDate && <div><p className="text-sm font-medium text-foreground mb-2">{p.t('timeLabel')}</p><TimeGrid slots={p.availableSlots} selectedTime={p.selectedTime} onSelect={t => { p.setSelectedTime(t); p.setStep('info'); }} t={p.t} /></div>}
           </div>
@@ -240,10 +240,10 @@ export function MinimalStyle(p: StyleProps) {
                 className="w-full text-left py-4 px-1 border-b border-border hover:bg-accent/30 transition-all flex justify-between items-center group">
                 <div>
                   <p className="text-sm text-foreground">{s.name}</p>
-                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground">{s.duration} min</p>
+                  {s.descricao && <p className="text-xs text-muted-foreground mt-0.5">{s.descricao}</p>}
+                  <p className="text-xs text-muted-foreground">{s.duracao} min</p>
                 </div>
-                {s.price != null && <span className="text-sm text-muted-foreground">{formatCurrency(s.currency)} {s.price}</span>}
+                {s.preco != null && <span className="text-sm text-muted-foreground">{formatCurrency(s.moeda)} {s.preco}</span>}
               </button>
             ))}
           </div>
@@ -275,7 +275,7 @@ export function MinimalStyle(p: StyleProps) {
           <div className="space-y-6">
             <button onClick={() => p.setStep('datetime')} className="text-xs text-muted-foreground hover:text-foreground">← {p.t('chooseDatetime')}</button>
             <div className="text-xs text-muted-foreground space-y-1">
-              <p>{p.service?.name} · {p.service?.duration}min</p>
+              <p>{p.service?.name} · {p.service?.duracao}min</p>
               <p>{new Date(p.selectedDate + 'T12:00:00').toLocaleDateString(p.locale, { day: 'numeric', month: 'short' })} · {p.selectedTime}</p>
             </div>
             <InfoForm {...p} />
@@ -307,11 +307,11 @@ export function BoldStyle(p: StyleProps) {
                 className="bg-card rounded-2xl p-5 text-left hover:shadow-lg transition-all border-2 border-transparent hover:border-primary flex justify-between items-center">
                 <div>
                   <p className="text-base font-bold text-foreground">{s.name}</p>
-                  {s.description && <p className="text-sm text-muted-foreground mt-0.5">{s.description}</p>}
-                  <p className="text-sm text-muted-foreground">{s.duration} min</p>
+                  {s.descricao && <p className="text-sm text-muted-foreground mt-0.5">{s.descricao}</p>}
+                  <p className="text-sm text-muted-foreground">{s.duracao} min</p>
                 </div>
                 <div className="text-right">
-                  {s.price != null && <p className="text-lg font-bold text-primary">{formatCurrency(s.currency)} {s.price}</p>}
+                  {s.preco != null && <p className="text-lg font-bold text-primary">{formatCurrency(s.moeda)} {s.preco}</p>}
                   <ArrowRight className="w-5 h-5 text-primary ml-auto mt-1" />
                 </div>
               </button>
@@ -321,7 +321,7 @@ export function BoldStyle(p: StyleProps) {
         {p.step === 'datetime' && (
           <div className="space-y-5">
             <div className="flex items-center gap-2"><button onClick={() => p.setStep('service')} className="btn-ghost p-2"><ArrowLeft className="w-4 h-4" /></button><h2 className="text-lg font-bold text-foreground">{p.t('chooseDatetime')}</h2></div>
-            {p.service && <div className="bg-primary text-primary-foreground rounded-xl px-4 py-2 text-sm font-medium inline-block">{p.service.name} · {p.service.duration}min</div>}
+            {p.service && <div className="bg-primary text-primary-foreground rounded-xl px-4 py-2 text-sm font-medium inline-block">{p.service.name} · {p.service.duracao}min</div>}
             <DateGrid dates={p.dates} selectedDate={p.selectedDate} onSelect={p.setSelectedDate} locale={p.locale} />
             {p.selectedDate && <TimeGrid slots={p.availableSlots} selectedTime={p.selectedTime} onSelect={t => { p.setSelectedTime(t); p.setStep('info'); }} t={p.t} />}
           </div>
@@ -367,10 +367,10 @@ export function ElegantStyle(p: StyleProps) {
                 className="w-full py-4 px-4 text-left hover:bg-accent/30 rounded-lg transition-all flex justify-between items-center border border-transparent hover:border-border">
                 <div>
                   <p className="text-sm text-foreground font-medium tracking-wide">{s.name}</p>
-                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground mt-0.5">{s.duration} min</p>
+                  {s.descricao && <p className="text-xs text-muted-foreground mt-0.5">{s.descricao}</p>}
+                  <p className="text-xs text-muted-foreground mt-0.5">{s.duracao} min</p>
                 </div>
-                {s.price != null && <span className="text-sm text-foreground">{formatCurrency(s.currency)} {s.price}</span>}
+                {s.preco != null && <span className="text-sm text-foreground">{formatCurrency(s.moeda)} {s.preco}</span>}
               </button>
             ))}
           </div>
@@ -415,10 +415,10 @@ export function CompactStyle(p: StyleProps) {
               <button key={s.id} onClick={() => { p.setSelectedService(s.id); p.setStep('datetime'); }}
                 className="card-elevated p-3 text-left hover:border-primary/30 transition-all">
                 <p className="text-sm font-medium text-foreground">{s.name}</p>
-                {s.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.description}</p>}
+                {s.descricao && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.descricao}</p>}
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-muted-foreground">{s.duration} min</span>
-                  {s.price != null && <span className="text-xs font-semibold text-primary">{formatCurrency(s.currency)} {s.price}</span>}
+                  <span className="text-xs text-muted-foreground">{s.duracao} min</span>
+                  {s.preco != null && <span className="text-xs font-semibold text-primary">{formatCurrency(s.moeda)} {s.preco}</span>}
                 </div>
               </button>
             ))}
@@ -508,10 +508,10 @@ export function PlayfulStyle(p: StyleProps) {
                 className="w-full bg-card rounded-2xl p-4 text-left hover:scale-[1.02] transition-all shadow-sm border border-border flex justify-between items-center">
                 <div>
                   <p className="text-sm font-bold text-foreground">{s.name} 💈</p>
-                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground">{s.duration} min</p>
+                  {s.descricao && <p className="text-xs text-muted-foreground mt-0.5">{s.descricao}</p>}
+                  <p className="text-xs text-muted-foreground">{s.duracao} min</p>
                 </div>
-                {s.price != null && <span className="bg-warning/10 text-warning px-2 py-1 rounded-full text-xs font-bold">{formatCurrency(s.currency)} {s.price}</span>}
+                {s.preco != null && <span className="bg-warning/10 text-warning px-2 py-1 rounded-full text-xs font-bold">{formatCurrency(s.moeda)} {s.preco}</span>}
               </button>
             ))}
           </div>
@@ -558,9 +558,9 @@ export function CorporateStyle(p: StyleProps) {
                 <tbody>
                   {p.mockServices.map(s => (
                     <tr key={s.id} onClick={() => { p.setSelectedService(s.id); p.setStep('datetime'); }} className="border-b border-border hover:bg-accent/30 cursor-pointer transition-colors">
-                      <td className="py-3 text-sm text-foreground"><span>{s.name}</span>{s.description && <span className="block text-xs text-muted-foreground">{s.description}</span>}</td>
-                      <td className="py-3 text-sm text-muted-foreground">{s.duration} min</td>
-                      <td className="py-3 text-sm text-foreground text-right">{s.price != null ? `${formatCurrency(s.currency)} ${s.price}` : '-'}</td>
+                      <td className="py-3 text-sm text-foreground"><span>{s.name}</span>{s.descricao && <span className="block text-xs text-muted-foreground">{s.descricao}</span>}</td>
+                      <td className="py-3 text-sm text-muted-foreground">{s.duracao} min</td>
+                      <td className="py-3 text-sm text-foreground text-right">{s.preco != null ? `${formatCurrency(s.moeda)} ${s.preco}` : '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -671,10 +671,10 @@ export function WarmStyle(p: StyleProps) {
                 className="w-full bg-card rounded-2xl p-4 text-left shadow-sm border border-warning/10 hover:border-warning/30 transition-all flex justify-between items-center">
                 <div>
                   <p className="text-sm font-medium text-foreground">{s.name}</p>
-                  {s.description && <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground">{s.duration} min</p>
+                  {s.descricao && <p className="text-xs text-muted-foreground mt-0.5">{s.descricao}</p>}
+                  <p className="text-xs text-muted-foreground">{s.duracao} min</p>
                 </div>
-                {s.price != null && <span className="text-sm font-semibold text-warning">{formatCurrency(s.currency)} {s.price}</span>}
+                {s.preco != null && <span className="text-sm font-semibold text-warning">{formatCurrency(s.moeda)} {s.preco}</span>}
               </button>
             ))}
           </div>
