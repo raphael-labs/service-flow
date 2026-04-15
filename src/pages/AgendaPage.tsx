@@ -265,7 +265,7 @@ export default function AgendaPage() {
       <div className="card-elevated p-4">
         {!isActiveDay ? (
           <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
-            🚫 Dia indisponível — configure em "Dias da semana"
+            🚫 Dia não habilitado — configure em "Dias da semana"
           </div>
         ) : (
           <CalendarGrid
