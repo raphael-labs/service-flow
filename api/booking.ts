@@ -1,83 +1,74 @@
 import { createClient } from '@supabase/supabase-js';
-import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const slug = searchParams.get('slug');
+export default async function handler(req: any, res: any) {
+  try {
+    const { slug } = req.query;
 
     if (!slug) {
-        return NextResponse.json({ error: 'slug obrigatório' }, { status: 400 });
+      return res.status(400).json({ error: 'slug obrigatório' });
     }
 
-    // 🔥 1. EMPRESA
-    const { data: empresa } = await supabase
-        .from('empresas')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
-    if (!empresa) {
-        return NextResponse.json({ error: 'empresa não encontrada' }, { status: 404 });
+    // 🔥 EMPRESA
+    const { data: empresa, error: errEmpresa } = await supabase
+      .from('empresas')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (errEmpresa || !empresa) {
+      console.error(errEmpresa);
+      return res.status(404).json({ error: 'empresa não encontrada' });
     }
 
     const empresaId = empresa.id;
 
-    // 🔥 2. SERVIÇOS
-    const { data: servicos } = await supabase
-        .from('servicos')
-        .select('*')
-        .eq('empresa_id', empresaId);
-
-    // 🔥 3. DIAS
-    const { data: dias } = await supabase
-        .from('dias_semanais')
-        .select('*')
-        .eq('empresa_id', empresaId);
-
-    // 🔥 4. AGENDAMENTOS (LIMITADO)
-    /*const { data: agendamentos } = await supabase
-      .from('agendamentos')
-      .select('servico_id, data_hora') // 🔥 NÃO retorna dados sensíveis
-      .eq('empresa_id', empresaId);*/
-
-    // 🔥 calcula janela válida
+    // 🔥 JANELA
     const now = new Date();
 
     const startDate = new Date(
-        now.getTime() + empresa.min_pre_hora * 60 * 60 * 1000
+      now.getTime() + (empresa.min_pre_hora || 0) * 60 * 60 * 1000
     );
 
     const endDate = new Date();
-    endDate.setDate(now.getDate() + empresa.max_agenda_dias);
+    endDate.setDate(now.getDate() + (empresa.max_agenda_dias || 7));
 
-    // 🔥 busca SOMENTE o necessário
+    // 🔥 AGENDAMENTOS
     const { data: agendamentos } = await supabase
-        .from('agendamentos')
-        .select('servico_id, data_hora')
-        .eq('empresa_id', empresaId)
-        .gte('data_hora', startDate.toISOString())
-        .lte('data_hora', endDate.toISOString());
+      .from('agendamentos')
+      .select('servico_id, data_hora')
+      .eq('empresa_id', empresaId)
+      .gte('data_hora', startDate.toISOString())
+      .lte('data_hora', endDate.toISOString());
 
-    return NextResponse.json({
-        empresa: {
-            id: empresa.id,
-            name: empresa.name,
-            telefone: empresa.telefone,
-            email: empresa.email,
-            endereco: empresa.endereco,
-            logo: empresa.path_img_logo,
-            bg: empresa.path_img_bg,
-            estilo: empresa.pg_estilo,
-            min_pre_hora: empresa.min_pre_hora,
-            max_agenda_dias: empresa.max_agenda_dias,
-        },
-        servicos,
-        dias,
-        agendamentos,
+    // 🔥 SERVIÇOS
+    const { data: servicos } = await supabase
+      .from('servicos')
+      .select('*')
+      .eq('empresa_id', empresaId);
+
+    // 🔥 DIAS
+    const { data: dias } = await supabase
+      .from('dias_semanais')
+      .select('*')
+      .eq('empresa_id', empresaId);
+
+    return res.status(200).json({
+      empresa,
+      servicos,
+      dias,
+      agendamentos,
     });
+
+  } catch (err: any) {
+    console.error('ERRO GERAL:', err);
+
+    return res.status(500).json({
+      error: err.message || 'erro interno'
+    });
+  }
 }
