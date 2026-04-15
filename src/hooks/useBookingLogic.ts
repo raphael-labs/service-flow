@@ -4,6 +4,24 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import type { BookingStyle } from '@/stores/businessImageStore';
+
+function mapStyle(styleNumber?: number): BookingStyle {
+  const map: Record<number, BookingStyle> = {
+    1: 'classic',
+    2: 'minimal',
+    3: 'bold',
+    4: 'elegant',
+    5: 'compact',
+    6: 'glass',
+    7: 'playful',
+    8: 'corporate',
+    9: 'modern',
+    10: 'warm',
+  };
+
+  return map[styleNumber || 1] || 'classic';
+}
 
 export type Step = 'service' | 'datetime' | 'info' | 'done';
 
@@ -101,7 +119,7 @@ export function useBookingLogic() {
 
       setLogo(data.empresa.logo);
       setExtraImage(data.empresa.bg);
-      setBookingStyle(data.empresa.estilo);
+      setBookingStyle(mapStyle(empresa.pg_estilo));
     }
 
     load();
