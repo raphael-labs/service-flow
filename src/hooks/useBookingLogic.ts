@@ -222,9 +222,9 @@ export function useBookingLogic() {
 
   return {
     slug,
-    logo,
-    extraImage,
-    bookingStyle,
+    logo: empresa?.path_img_logo || null,
+    extraImage: empresa?.path_img_bg || null,
+    bookingStyle: empresa?.pg_estilo || 'classic',
     businessEmail: empresa?.email || '',
     businessPhone: empresa?.telefone || '',
     businessAddress: empresa?.endereco || '',
