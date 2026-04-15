@@ -23,6 +23,8 @@ interface StyleProps {
   setPhone: (p: string) => void;
   email: string;
   setEmail: (e: string) => void;
+  birthDate: string;
+  setBirthDate: (d: string) => void;
   service: MockService | undefined;
   mockServices: MockService[];
   availableSlots: string[];
@@ -153,11 +155,12 @@ const SummaryCard = ({ service, selectedDate, selectedTime, locale, t }: { servi
   </div>
 );
 
-const InfoForm = ({ name, setName, phone, setPhone, email, setEmail, handleConfirm, t }: Pick<StyleProps, 'name' | 'setName' | 'phone' | 'setPhone' | 'email' | 'setEmail' | 'handleConfirm' | 't'>) => (
+const InfoForm = ({ name, setName, phone, setPhone, email, setEmail, birthDate, setBirthDate, handleConfirm, t }: Pick<StyleProps, 'name' | 'setName' | 'phone' | 'setPhone' | 'email' | 'setEmail' | 'birthDate' | 'setBirthDate' | 'handleConfirm' | 't'>) => (
   <form onSubmit={handleConfirm} className="space-y-4">
     <FormInput label={t('name')} value={name} onChange={e => setName(e.target.value)} placeholder={t('yourFullName')} required />
     <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} placeholder="(11) 99999-9999" required />
     <FormInput label={t('email')} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required />
+    <FormInput label={t('birthDate')} type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="01/01/1990" required />
     <button type="submit" className="btn-primary w-full">{t('confirmBooking')}</button>
   </form>
 );
