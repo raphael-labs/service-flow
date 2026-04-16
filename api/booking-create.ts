@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       const { data: novoCliente, error: erroCliente } = await supabase
         .from('clientes')
         .insert({
-          nome,
+          name: nome,
           telefone,
           email,
           data_nascimento,
