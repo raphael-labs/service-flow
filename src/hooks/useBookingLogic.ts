@@ -66,6 +66,7 @@ export function useBookingLogic() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [birthDate, setBirthDate] = useState('');
 
   // 🔥 LOAD API
   useEffect(() => {
@@ -184,7 +185,7 @@ export function useBookingLogic() {
   }, [selectedDate, service, appointments, diasSemana, empresa]);
 
   // 🔥 CONFIRMAR
-  const handleConfirm = async (e: React.FormEvent) => {
+  /*const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!service || !empresa) return;
@@ -202,6 +203,41 @@ export function useBookingLogic() {
 
     toast.success(t('bookingConfirmed'));
     setStep('done');
+  };*/
+
+  const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!service || !empresa) return;
+
+    const dataHora = new Date(`${selectedDate}T${selectedTime}:00`);
+
+    const res = await fetch('/api/booking-create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        empresa_id: empresa.id,
+        nome: name,
+        telefone: phone,
+        email: email,
+        data_nascimento: birthDate,
+        servico_id: service.id,
+        data_hora: dataHora.toISOString()
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data);
+      toast.error('Erro ao agendar');
+      return;
+    }
+
+    toast.success(t('bookingConfirmed'));
+    setStep('done');
   };
 
   const reset = () => {
@@ -212,6 +248,7 @@ export function useBookingLogic() {
     setName('');
     setPhone('');
     setEmail('');
+    setBirthDate('');
   };
 
   // 🔥 🔥 🔥 PROTEÇÃO PRINCIPAL
@@ -242,6 +279,8 @@ export function useBookingLogic() {
     setPhone,
     email,
     setEmail,
+    birthDate,
+    setBirthDate,
     service,
     mockServices: services,
     availableSlots,
