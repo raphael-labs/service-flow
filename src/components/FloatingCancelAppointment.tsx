@@ -36,19 +36,26 @@ export default function FloatingCancelAppointment() {
 
             const data = await res.json();
 
-            const formatted = (data.agendamentos || []).map((a: any) => {
-                const dateObj = new Date(a.data_hora);
+            if (!res.ok) {
+                console.error(data);
+                alert(data.error || 'Erro ao buscar');
+                return;
+            }
+
+            const lista = data.agendamentos || [];
+
+            const formatted = lista.map((a: any) => {
+                const d = new Date(a.data_hora);
 
                 return {
                     id: a.id,
-                    serviceName: a.servicos?.name || 'Serviço',
-                    date: dateObj.toLocaleDateString(),
-                    time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    serviceName: a.servicos?.nome || 'Serviço',
+                    date: d.toLocaleDateString(),
+                    time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 };
             });
 
-
-            setAppointments(data || []);
+            setAppointments(formatted);
         } catch (err) {
             console.error(err);
             alert('Erro ao buscar agendamentos');
