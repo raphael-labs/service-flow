@@ -70,11 +70,10 @@ export default function FloatingCancelAppointment() {
         if (!reason) return;
 
         try {
-            console.log({ id, reason });
             await fetch('/api/cancel-appointment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, motivo: reason }),
+                body: JSON.stringify({ agendamento_id: id, motivo: reason }),
             });
 
             setAppointments(prev => prev.filter(a => a.id !== id));
