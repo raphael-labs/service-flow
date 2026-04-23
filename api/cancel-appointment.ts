@@ -20,7 +20,7 @@ export default async function handler(req: any, res: any) {
     const { error } = await supabase
       .from('agendamentos')
       .update({
-        status: 'cancelado',
+        cancel_at: new Date().toISOString(),
         motivo_cancel: motivo || null,
       })
       .eq('id', agendamento_id);

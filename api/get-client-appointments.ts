@@ -53,6 +53,7 @@ export default async function handler(req: any, res: any) {
       `)
       .eq('cliente_id', cliente.id)
       .eq('empresa_id', empresa.id)
+      .is('cancel_at', null)
       .gte('data_hora', now)
       .order('data_hora', { ascending: true });
 
