@@ -22,6 +22,7 @@ export default async function handler(req: any, res: any) {
       .update({
         cancel_at: new Date().toISOString(),
         motivo_cancel: motivo || null,
+        lido: false,
       })
       .eq('id', agendamento_id);
 
