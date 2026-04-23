@@ -73,11 +73,13 @@ export default function AgendaPage() {
       const { data: cli } = await supabase // alterar para um modo mais eficiente disso digitar e buscar, algo assim
         .from("clientes")
         .select("*")
-        .eq("empresa_id", empresaId);
+        .eq("empresa_id", empresaId)
+        .order('name', { ascending: true });
       const { data: srv } = await supabase
         .from("servicos")
         .select("*")
-        .eq("empresa_id", empresaId);
+        .eq("empresa_id", empresaId)
+        .order('name', { ascending: true });
       const { data: dias } = await supabase
         .from("dias_semanais")
         .select("*")

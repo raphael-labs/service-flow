@@ -34,7 +34,7 @@ function NotificationItem({ notification, onRead }: { notification: AppNotificat
             <p className="text-xs text-destructive/80 mt-0.5 italic">{t('reason')}: {notification.reason}</p>
           )}
           <p className="text-[10px] text-muted-foreground/60 mt-1">
-            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: dateFnsLocale })}
+            {formatDistanceToNow(new Date(isNew ? notification.createdAt : notification.cancelAt), { addSuffix: true, locale: dateFnsLocale })}
           </p>
         </div>
         {!notification.read && (

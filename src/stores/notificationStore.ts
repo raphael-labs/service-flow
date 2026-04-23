@@ -40,6 +40,7 @@ export const useNotificationStore = create<Store>((set, get) => ({
         id,
         data_hora,
         created_at,
+        cancel_at,
         lido,
         motivo_cancel,
         clientes ( name ),
