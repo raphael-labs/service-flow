@@ -4,6 +4,8 @@ import {
   GlassStyle, PlayfulStyle, CorporateStyle, ModernStyle, WarmStyle
 } from '@/components/booking/BookingStyles';
 import type { BookingStyle } from '@/stores/businessImageStore';
+import FloatingCancelAppointment from '@/components/FloatingCancelAppointment';
+
 
 const styleMap: Record<BookingStyle, React.FC<any>> = {
   classic: ClassicStyle,
@@ -29,5 +31,10 @@ export default function BookingPage() {
     );
   }
   const StyleComponent = styleMap[props.bookingStyle] || ClassicStyle;
-  return <StyleComponent {...props} />;
+  return (
+    <>
+      <StyleComponent {...props} />
+      <FloatingCancelAppointment />
+    </>
+  );
 }
