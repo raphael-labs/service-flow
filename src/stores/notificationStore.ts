@@ -1,101 +1,115 @@
 import { create } from 'zustand';
-
-export type NotificationType = 'new_appointment' | 'cancelled_appointment';
+import { supabase } from '@/lib/supabase';
+import { getEmpresaId } from '@/lib/getEmpresaId';
 
 export interface AppNotification {
   id: string;
-  type: NotificationType;
+  cancel_at: string | null;
+  read: boolean;
   serviceName: string;
   clientName: string;
   date: string;
   time: string;
   reason?: string;
-  read: boolean;
   createdAt: string;
+  type: string;
 }
 
-interface NotificationState {
+interface Store {
   notifications: AppNotification[];
-  addNotification: (n: Omit<AppNotification, 'id' | 'read' | 'createdAt'>) => void;
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  clearAll: () => void;
+  load: () => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
   unreadCount: () => number;
-  loadMock: () => void;
 }
 
-const today = new Date().toISOString().split('T')[0];
-
-const mockNotifications: AppNotification[] = [
-  {
-    id: '1',
-    type: 'new_appointment',
-    serviceName: 'Corte de Cabelo',
-    clientName: 'Carlos Oliveira',
-    date: today,
-    time: '09:00',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-  },
-  {
-    id: '2',
-    type: 'cancelled_appointment',
-    serviceName: 'Barba',
-    clientName: 'Ana Santos',
-    date: today,
-    time: '10:00',
-    reason: 'Conflito de horário',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-  },
-  {
-    id: '3',
-    type: 'new_appointment',
-    serviceName: 'Corte + Barba',
-    clientName: 'Pedro Lima',
-    date: today,
-    time: '14:00',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-  },
-  {
-    id: '4',
-    type: 'cancelled_appointment',
-    serviceName: 'Corte de Cabelo',
-    clientName: 'Maria Souza',
-    date: today,
-    time: '15:30',
-    reason: 'Imprevisto pessoal',
-    read: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-];
-
-export const useNotificationStore = create<NotificationState>((set, get) => ({
+export const useNotificationStore = create<Store>((set, get) => ({
   notifications: [],
-  addNotification: (n) =>
-    set({
-      notifications: [
-        {
-          ...n,
-          id: crypto.randomUUID(),
-          read: false,
-          createdAt: new Date().toISOString(),
-        },
-        ...get().notifications,
-      ],
-    }),
-  markAsRead: (id) =>
-    set({
-      notifications: get().notifications.map((n) =>
+
+  // 🔥 CARREGAR NOTIFICAÇÕES
+  load: async () => {
+    const empresaId = await getEmpresaId();
+    if (!empresaId) return;
+
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    const { data, error } = await supabase
+      .from('agendamentos')
+      .select(`
+        id,
+        data_hora,
+        created_at,
+        lido,
+        motivo_cancel,
+        clientes ( name ),
+        servicos ( name )
+      `)
+      .eq('empresa_id', empresaId)
+      .or(`lido.eq.false,created_at.gte.${threeDaysAgo.toISOString()},cancel_at.gte.${threeDaysAgo.toISOString()}`)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error('Erro ao buscar notificações:', error);
+      return;
+    }
+
+    const notifications = data.map((a: any) => {
+      const dateObj = new Date(a.data_hora);
+
+      return {
+        id: a.id,
+        type: a.cancel_at ? 'cancelled_appointment' : 'new_appointment',
+        read: a.lido,
+        serviceName: a.servicos?.name || '',
+        clientName: a.clientes?.name || '',
+        date: dateObj.toLocaleDateString(),
+        time: dateObj.toTimeString().slice(0, 5),
+        reason: a.motivo_cancelamento,
+        createdAt: a.created_at,
+        cancelAt: a.cancel_at,
+      };
+    });
+
+    set({ notifications });
+  },
+
+  // 🔥 MARCAR UMA COMO LIDA
+  markAsRead: async (id) => {
+    await supabase
+      .from('agendamentos')
+      .update({ lido: true })
+      .eq('id', id);
+
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
         n.id === id ? { ...n, read: true } : n
       ),
-    }),
-  markAllAsRead: () =>
-    set({
-      notifications: get().notifications.map((n) => ({ ...n, read: true })),
-    }),
-  clearAll: () => set({ notifications: [] }),
-  unreadCount: () => get().notifications.filter((n) => !n.read).length,
-  loadMock: () => set({ notifications: mockNotifications }),
+    }));
+  },
+
+  // 🔥 MARCAR TODAS COMO LIDAS
+  markAllAsRead: async () => {
+    const ids = get().notifications.map((n) => n.id);
+
+    if (ids.length === 0) return;
+
+    await supabase
+      .from('agendamentos')
+      .update({ lido: true })
+      .in('id', ids);
+
+    set((state) => ({
+      notifications: state.notifications.map((n) => ({
+        ...n,
+        read: true,
+      })),
+    }));
+  },
+
+  // 🔥 CONTADOR
+  unreadCount: () => {
+    return get().notifications.filter((n) => !n.read).length;
+  },
 }));

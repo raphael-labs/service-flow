@@ -13,14 +13,12 @@ function NotificationItem({ notification, onRead }: { notification: AppNotificat
   return (
     <button
       onClick={onRead}
-      className={`w-full text-left px-4 py-3 transition-colors hover:bg-accent/50 border-b border-border last:border-b-0 ${
-        !notification.read ? 'bg-accent/30' : ''
-      }`}
+      className={`w-full text-left px-4 py-3 transition-colors hover:bg-accent/50 border-b border-border last:border-b-0 ${!notification.read ? 'bg-accent/30' : ''
+        }`}
     >
       <div className="flex gap-3">
-        <div className={`mt-0.5 p-1.5 rounded-lg shrink-0 ${
-          isNew ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-destructive/15 text-destructive'
-        }`}>
+        <div className={`mt-0.5 p-1.5 rounded-lg shrink-0 ${isNew ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-destructive/15 text-destructive'
+          }`}>
           {isNew ? <CalendarPlus className="w-4 h-4" /> : <CalendarX className="w-4 h-4" />}
         </div>
         <div className="flex-1 min-w-0">
@@ -48,14 +46,27 @@ function NotificationItem({ notification, onRead }: { notification: AppNotificat
 }
 
 export default function NotificationDropdown() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, loadMock } = useNotificationStore();
+  //const { notifications, unreadCount, markAsRead, markAllAsRead, loadMock } = useNotificationStore();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, load } = useNotificationStore();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const count = unreadCount();
   const { t } = useTranslation();
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (notifications.length === 0) loadMock();
+  }, []);*/
+
+
+
+  useEffect(() => {
+    load();
+
+    const interval = setInterval(() => {
+      load();
+    }, 600000); // 10 minutos
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
