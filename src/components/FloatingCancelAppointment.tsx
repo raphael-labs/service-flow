@@ -49,7 +49,7 @@ export default function FloatingCancelAppointment() {
 
                 return {
                     id: a.id,
-                    serviceName: a.servicos?.nome || 'Serviço',
+                    serviceName: a.servicos?.name || 'Serviço',
                     date: d.toLocaleDateString(),
                     time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 };
@@ -70,7 +70,7 @@ export default function FloatingCancelAppointment() {
         if (!reason) return;
 
         try {
-            await fetch('/api/cancel-appointments', {
+            await fetch('/api/cancel-appointment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, motivo: reason }),
