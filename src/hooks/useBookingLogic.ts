@@ -5,6 +5,7 @@ import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { BookingStyle } from '@/stores/businessImageStore';
 import { isValidPhone } from '@/utils/phone';
+import { useLanguageStore } from '@/stores/languageStore';
 
 function mapStyle(styleNumber?: number): BookingStyle {
   const map: Record<number, BookingStyle> = {
@@ -48,6 +49,7 @@ export function formatCurrency(currency: string) {
 }
 
 export function useBookingLogic() {
+  const setLanguage = useLanguageStore(s => s.setLanguage);
   const { slug } = useParams();
   const { setLogo, setExtraImage, setBookingStyle, logo, extraImage, bookingStyle } = useBusinessImageStore();
   const { t, locale } = useTranslation();
@@ -57,6 +59,7 @@ export function useBookingLogic() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [diasSemana, setDiasSemana] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   const [step, setStep] = useState<Step>('service');
   const [selectedService, setSelectedService] = useState('');
@@ -89,6 +92,10 @@ export function useBookingLogic() {
         setServices(data.servicos || []);
         setDiasSemana(data.dias || []);
         setAppointments(data.agendamentos || []);
+
+        if (emp.idioma) {
+          setLanguage(emp.idioma); // 'pt' | 'en' | 'es'
+        }
 
         // 🔥 CORRETO (usa emp, não estado)
         setLogo(emp.path_img_logo || null);
@@ -185,17 +192,19 @@ export function useBookingLogic() {
   }, [selectedDate, service, appointments, diasSemana, empresa]);
 
   const handleConfirm = async (e: React.FormEvent) => {
+    setSending(true);
     e.preventDefault();
-
-    if (!service || !empresa || !phone || !email || !birthDate) return;
-
+    toast.info(t('schedulingBooking'));
+    if (!service || !empresa || !phone || !email || !birthDate) {
+      setSending(false);
+      return;
+    }
     if (!isValidPhone(phone)) {
-          toast.error(t('phoneinvalid'));
-          return;
-        }
-
+      toast.error(t('phoneinvalid'));
+      setSending(false);
+      return;
+    }
     const dataHora = new Date(`${selectedDate}T${selectedTime}:00`);
-
     const res = await fetch('/api/booking-create', {
       method: 'POST',
       headers: {
@@ -211,17 +220,16 @@ export function useBookingLogic() {
         data_hora: dataHora.toISOString()
       })
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       console.error(data);
       toast.error('Erro ao agendar');
+      setSending(false);
       return;
     }
-
     toast.success(t('bookingConfirmed'));
     setStep('done');
+    setSending(false);
   };
 
   const reset = () => {

@@ -185,6 +185,7 @@ export const translations = {
     bookingConfirmedDesc: 'Seu horário foi reservado. Você receberá uma confirmação por email.',
     makeAnother: 'Fazer outro agendamento',
     business: 'Negócio',
+    schedulingBooking: 'Agendando seu horário...',
 
     // Appointment status
     confirmed: 'Confirmado',
@@ -373,6 +374,7 @@ export const translations = {
     bookingConfirmedDesc: 'Your time has been reserved. You will receive a confirmation email.',
     makeAnother: 'Make another booking',
     business: 'Business',
+    schedulingBooking: 'Scheduling your booking...',
 
     confirmed: 'Confirmed',
     pending: 'Pending',
@@ -559,6 +561,7 @@ export const translations = {
     bookingConfirmedDesc: 'Tu horario ha sido reservado. Recibirás una confirmación por correo.',
     makeAnother: 'Hacer otra reserva',
     business: 'Negocio',
+    schedulingBooking: 'Agendando tu reserva...',
 
     confirmed: 'Confirmado',
     pending: 'Pendiente',
