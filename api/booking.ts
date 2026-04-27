@@ -42,6 +42,7 @@ export default async function handler(req: any, res: any) {
       .from('agendamentos')
       .select('servico_id, data_hora')
       .eq('empresa_id', empresaId)
+      .is('cancel_at', null)
       .gte('data_hora', startDate.toISOString())
       .lte('data_hora', endDate.toISOString());
 

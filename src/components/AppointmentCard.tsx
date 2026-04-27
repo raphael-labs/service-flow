@@ -21,7 +21,8 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
   const duration = appointment.servicos?.duracao || 0;
 
   // 🔥 status simples baseado no banco
-  let status = 'pending';
+  //let status = 'pending'; mudar isso depois que adicionar funcionalidade
+  let status = 'created';
 
   if (appointment.cancel_at) {
     status = 'cancelled';
@@ -32,12 +33,14 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
   const statusColors: Record<string, string> = {
     confirmed: 'badge-success',
     pending: 'badge-primary',
+    created: 'badge-primary',
     cancelled: 'bg-destructive/10 text-destructive',
   };
 
   const statusLabels: Record<string, string> = {
     confirmed: t('confirmed'),
     pending: t('pending'),
+    created: t('created'),
     cancelled: t('cancelled'),
   };
 

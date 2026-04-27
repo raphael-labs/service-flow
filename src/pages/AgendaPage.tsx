@@ -69,6 +69,7 @@ export default function AgendaPage() {
       const { data: appt } = await supabase //alterar para pegar somente agendamentos do dia
         .from("agendamentos")
         .select("*")
+        .is('cancel_at', null)
         .eq("empresa_id", empresaId);
       const { data: cli } = await supabase // alterar para um modo mais eficiente disso digitar e buscar, algo assim
         .from("clientes")

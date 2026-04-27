@@ -12,6 +12,20 @@ import { Pencil, Trash2, Plus, Search, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from "@/lib/supabase";
 import { getEmpresaId } from "@/lib/getEmpresaId";
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+
+export function formatPhoneDisplay(phone?: string | null) {
+  if (!phone) return '';
+
+  try {
+    const phoneNumber = parsePhoneNumberFromString(phone);
+    return phoneNumber ? phoneNumber.formatInternational() : phone;
+  } catch {
+    console.log('Error parsing phone number:', phone);
+    return phone;
+  }
+}
 
 export default function ClientesPage() {
   const { clients } = useClientStore();
@@ -36,7 +50,7 @@ export default function ClientesPage() {
         .from("clientes")
         .select("*")
         .eq("empresa_id", empresaId)
-        .order("created_at", { ascending: false });
+        .order("name", { ascending: true });
 
       if (error) throw error;
 
@@ -229,14 +243,14 @@ export default function ClientesPage() {
                   <tr key={c.id} className="border-b border-border last:border-0 hover:bg-secondary/50 transition-colors">
                     <td className="px-5 py-3.5 text-sm font-medium text-foreground">{c.name}</td>
 
-                    <td className="px-5 py-3.5 text-sm text-muted-foreground">{c.telefone}</td>
+                    <td className="px-5 py-3.5 text-sm text-muted-foreground">{formatPhoneDisplay(c.telefone)}</td>
 
                     <td className="px-5 py-3.5 text-sm text-muted-foreground hidden sm:table-cell">{c.email}</td>
 
                     {/* 🎂 NOVO CAMPO */}
                     <td className="px-5 py-3.5 text-sm text-muted-foreground">
                       {c.data_nascimento
-                        ? new Date(c.data_nascimento).toLocaleDateString('pt-BR')
+                        ? new Date(c.data_nascimento + "T00:00:00").toLocaleDateString('pt-BR')
                         : '-'}
                     </td>
 

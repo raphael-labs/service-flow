@@ -69,7 +69,7 @@ export const useNotificationStore = create<Store>((set, get) => ({
         time: dateObj.toTimeString().slice(0, 5),
         reason: a.motivo_cancelamento,
         createdAt: a.created_at,
-        cancelAt: a.cancel_at,
+        cancel_at: a.cancel_at,
       };
     });
 
@@ -78,35 +78,79 @@ export const useNotificationStore = create<Store>((set, get) => ({
 
   // 🔥 MARCAR UMA COMO LIDA
   markAsRead: async (id) => {
-    await supabase
-      .from('agendamentos')
-      .update({ lido: true })
-      .eq('id', id);
+    const notification = get().notifications.find(n => n.id === id);
 
-    set((state) => ({
-      notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
-      ),
-    }));
+    if (!notification) return;
+
+    try {
+      if (notification.cancel_at) {
+        // ❌ se foi cancelado → deleta do banco
+        await supabase
+          .from('agendamentos')
+          .delete()
+          .eq('id', id);
+
+        // remove do estado
+        set((state) => ({
+          notifications: state.notifications.filter(n => n.id !== id),
+        }));
+      } else {
+        // 🔔 normal → marca como lido
+        await supabase
+          .from('agendamentos')
+          .update({ lido: true })
+          .eq('id', id);
+
+        set((state) => ({
+          notifications: state.notifications.map((n) =>
+            n.id === id ? { ...n, read: true } : n
+          ),
+        }));
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar notificação:', err);
+    }
   },
 
   // 🔥 MARCAR TODAS COMO LIDAS
   markAllAsRead: async () => {
-    const ids = get().notifications.map((n) => n.id);
+    const notifications = get().notifications;
 
-    if (ids.length === 0) return;
+    if (notifications.length === 0) return;
 
-    await supabase
-      .from('agendamentos')
-      .update({ lido: true })
-      .in('id', ids);
+    try {
+      const cancelados = notifications.filter(n => n.cancel_at).map(n => n.id);
+      const ativos = notifications.filter(n => !n.cancel_at).map(n => n.id);
 
-    set((state) => ({
-      notifications: state.notifications.map((n) => ({
-        ...n,
-        read: true,
-      })),
-    }));
+      // ❌ deletar cancelados
+      if (cancelados.length > 0) {
+        await supabase
+          .from('agendamentos')
+          .delete()
+          .in('id', cancelados);
+      }
+
+      // 🔔 marcar ativos como lidos
+      if (ativos.length > 0) {
+        await supabase
+          .from('agendamentos')
+          .update({ lido: true })
+          .in('id', ativos);
+      }
+
+      // atualizar estado
+      set((state) => ({
+        notifications: state.notifications
+          .filter(n => !n.cancel_at) // remove cancelados
+          .map(n => ({
+            ...n,
+            read: true,
+          })),
+      }));
+
+    } catch (err) {
+      console.error('Erro ao atualizar notificações:', err);
+    }
   },
 
   // 🔥 CONTADOR

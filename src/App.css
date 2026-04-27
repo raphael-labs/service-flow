@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,40 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: transparent !important;
+}
+
+.PhoneInputInput {
+  border: none;
+  outline: none;
+  /*background: transparent;*/
+  flex: 1;
+  /*color: inherit;*/
+  font: inherit;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.PhoneInputCountry {
+  margin-right: 8px;
+}
+
+.PhoneInputCountrySelect {
+  /*background: transparent;*/
+  border: none;
+  outline: none;
+  cursor: pointer;
+  /*color: inherit;*/
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.PhoneInputInput::placeholder {
+  color: hsl(var(--muted-foreground));
 }

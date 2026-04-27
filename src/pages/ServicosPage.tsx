@@ -36,7 +36,7 @@ export default function ServicosPage() {
         .from("servicos")
         .select("*")
         .eq("empresa_id", empresaId)
-        .order("created_at", { ascending: false });
+        .order("name", { ascending: true });
 
       if (error) throw error;
 

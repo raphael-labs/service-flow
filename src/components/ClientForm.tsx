@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import FormInput from './FormInput';
 import { useTranslation } from '@/hooks/useTranslation';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+import { FormPhoneInput } from './FormPhoneInput';
+
 
 interface ClientFormProps {
   initialData?: {
@@ -46,11 +50,10 @@ export default function ClientForm({ initialData, onSubmit, onCancel }: ClientFo
         required
       />
 
-      <FormInput
+      <FormPhoneInput
         label={t('phone')}
         value={phone}
-        onChange={e => setPhone(e.target.value)}
-        required
+        onChange={setPhone}
       />
 
       <FormInput

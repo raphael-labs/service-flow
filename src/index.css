@@ -209,3 +209,41 @@
 .doodle-draw {
   animation: doodle-container 8s ease-in-out forwards;
 }
+
+
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: transparent !important;
+}
+
+.PhoneInputInput {
+  border: none;
+  outline: none;
+  /*background: transparent;*/
+  flex: 1;
+  /*color: inherit;*/
+  font: inherit;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.PhoneInputCountry {
+  margin-right: 8px;
+}
+
+.PhoneInputCountrySelect {
+  /*background: transparent;*/
+  border: none;
+  outline: none;
+  cursor: pointer;
+  /*color: inherit;*/
+  /*background: transparent !important;*/
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(var(--background)) !important;
+}
+
+.PhoneInputInput::placeholder {
+  color: hsl(var(--muted-foreground));
+}

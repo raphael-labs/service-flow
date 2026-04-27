@@ -77,7 +77,7 @@ export default function CalendarGrid({
   const dayAppointments = useMemo(
     () =>
       appointments.filter(
-        a => a.date === date && a.status !== 'cancelled'
+        a => a.date === date //&& a.status !== 'cancelled'
       ),
     [appointments, date]
   );
