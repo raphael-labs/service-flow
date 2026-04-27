@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useBusinessImageStore } from '@/stores/businessImageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { BookingStyle } from '@/stores/businessImageStore';
+import { isValidPhone } from '@/utils/phone';
 
 function mapStyle(styleNumber?: number): BookingStyle {
   const map: Record<number, BookingStyle> = {
@@ -184,31 +184,15 @@ export function useBookingLogic() {
     return result;
   }, [selectedDate, service, appointments, diasSemana, empresa]);
 
-  // 🔥 CONFIRMAR
-  /*const handleConfirm = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!service || !empresa) return;
-
-    const dataHora = new Date(`${selectedDate}T${selectedTime}:00`);
-
-    await supabase.from('agendamentos').insert({
-      empresa_id: empresa.id,
-      cliente_nome: name,
-      cliente_telefone: phone,
-      cliente_email: email,
-      servico_id: service.id,
-      data_hora: dataHora.toISOString(),
-    });
-
-    toast.success(t('bookingConfirmed'));
-    setStep('done');
-  };*/
-
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!service || !empresa) return;
+    if (!service || !empresa || !phone || !email || !birthDate) return;
+
+    if (!isValidPhone(phone)) {
+          toast.error(t('phoneinvalid'));
+          return;
+        }
 
     const dataHora = new Date(`${selectedDate}T${selectedTime}:00`);
 

@@ -88,6 +88,8 @@ export const translations = {
     name: 'Nome',
     phone: 'Telefone',
     birthDate: "Data de nascimento",
+    phoneinvalid: 'Preencha um telefone válido',
+    fillAllFields: 'Preencha todos os campos',
 
     // Services
     newService: 'Novo Serviço',
@@ -278,6 +280,8 @@ export const translations = {
     name: 'Name',
     phone: 'Phone',
     birthDate: "Birth Date",
+    phoneinvalid: 'Please enter a valid phone number.',
+    fillAllFields: 'Please fill in all fields.',
 
     newService: 'New Service',
     addService: 'Add Service',
@@ -462,6 +466,8 @@ export const translations = {
     name: 'Nombre',
     phone: 'Teléfono',
     birthDate: "Fecha de nacimiento",
+    phoneinvalid: 'Por favor, introduzca un número de teléfono válido.',
+    fillAllFields: 'Por favor, complete todos los campos.',
 
     newService: 'Nuevo Servicio',
     addService: 'Agregar Servicio',

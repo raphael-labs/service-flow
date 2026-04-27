@@ -45,11 +45,10 @@ const StepDots = ({ step, className = '' }: { step: Step; className?: string }) 
     <div className={`flex items-center justify-center gap-2 mb-6 ${className}`}>
       {steps.map((s, i) => (
         <div key={s} className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-            step === s ? 'bg-primary text-primary-foreground' :
-            (currentIdx > i || step === 'done') ? 'bg-primary/20 text-primary' :
-            'bg-secondary text-muted-foreground'
-          }`}>{i + 1}</div>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step === s ? 'bg-primary text-primary-foreground' :
+              (currentIdx > i || step === 'done') ? 'bg-primary/20 text-primary' :
+                'bg-secondary text-muted-foreground'
+            }`}>{i + 1}</div>
           {i < 2 && <div className="w-8 h-0.5 bg-border rounded" />}
         </div>
       ))}
@@ -120,9 +119,8 @@ const DateGrid = ({ dates, selectedDate, onSelect, locale }: { dates: Date[]; se
       const ds = d.toISOString().split('T')[0];
       return (
         <button key={ds} onClick={() => onSelect(ds)}
-          className={`flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-all ${
-            selectedDate === ds ? 'bg-primary text-primary-foreground' : 'bg-card border border-border hover:border-primary/30 text-muted-foreground'
-          }`}>
+          className={`flex flex-col items-center py-2 px-1 rounded-lg text-xs transition-all ${selectedDate === ds ? 'bg-primary text-primary-foreground' : 'bg-card border border-border hover:border-primary/30 text-muted-foreground'
+            }`}>
           <span className="font-medium">{d.toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')}</span>
           <span className="text-base font-bold mt-0.5">{d.getDate()}</span>
         </button>
@@ -136,9 +134,8 @@ const TimeGrid = ({ slots, selectedTime, onSelect, t }: { slots: string[]; selec
     <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
       {slots.map(time => (
         <button key={time} onClick={() => onSelect(time)}
-          className={`py-2 rounded-lg text-sm font-medium transition-all ${
-            selectedTime === time ? 'bg-primary text-primary-foreground' : 'bg-card border border-border hover:border-primary/30 text-foreground'
-          }`}>{time}</button>
+          className={`py-2 rounded-lg text-sm font-medium transition-all ${selectedTime === time ? 'bg-primary text-primary-foreground' : 'bg-card border border-border hover:border-primary/30 text-foreground'
+            }`}>{time}</button>
       ))}
     </div>
   )
@@ -160,16 +157,7 @@ const SummaryCard = ({ service, selectedDate, selectedTime, locale, t }: { servi
 const InfoForm = ({ name, setName, phone, setPhone, email, setEmail, birthDate, setBirthDate, handleConfirm, t }: Pick<StyleProps, 'name' | 'setName' | 'phone' | 'setPhone' | 'email' | 'setEmail' | 'birthDate' | 'setBirthDate' | 'handleConfirm' | 't'>) => (
   <form onSubmit={handleConfirm} className="space-y-4">
     <FormInput label={t('name')} value={name} onChange={e => setName(e.target.value)} placeholder={t('yourFullName')} required />
-
-    <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} placeholder="(11) 99999-9999" required />
-
-
-          <FormPhoneInput
-            label={t('phone')}
-            value={phone}
-            onChange={setPhone}
-          />
-
+    <FormPhoneInput label={t('phone')} value={phone} onChange={setPhone} />
     <FormInput label={t('email')} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required />
     <FormInput label={t('birthDate')} type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="01/01/1990" required />
     <button type="submit" className="btn-primary w-full">{t('confirmBooking')}</button>
@@ -267,12 +255,14 @@ export function MinimalStyle(p: StyleProps) {
             <button onClick={() => p.setStep('service')} className="text-xs text-muted-foreground hover:text-foreground">← {p.t('chooseService')}</button>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.t('dateLabel')}</p>
             <div className="flex flex-wrap gap-2">
-              {p.dates.map(d => { const ds = d.toISOString().split('T')[0]; return (
-                <button key={ds} onClick={() => p.setSelectedDate(ds)}
-                  className={`px-3 py-2 rounded text-xs transition-all ${p.selectedDate === ds ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'}`}>
-                  {d.getDate()}/{d.getMonth() + 1}
-                </button>
-              ); })}
+              {p.dates.map(d => {
+                const ds = d.toISOString().split('T')[0]; return (
+                  <button key={ds} onClick={() => p.setSelectedDate(ds)}
+                    className={`px-3 py-2 rounded text-xs transition-all ${p.selectedDate === ds ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground'}`}>
+                    {d.getDate()}/{d.getMonth() + 1}
+                  </button>
+                );
+              })}
             </div>
             {p.selectedDate && <>
               <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.t('timeLabel')}</p>
@@ -630,9 +620,8 @@ export function ModernStyle(p: StyleProps) {
         {p.step !== 'done' && (
           <div className="flex gap-1 mb-6">
             {['service', 'datetime', 'info'].map((s, i) => (
-              <div key={s} className={`h-1 flex-1 rounded-full transition-all ${
-                (['service', 'datetime', 'info'].indexOf(p.step) >= i || p.step === 'done') ? 'bg-primary' : 'bg-border'
-              }`} />
+              <div key={s} className={`h-1 flex-1 rounded-full transition-all ${(['service', 'datetime', 'info'].indexOf(p.step) >= i || p.step === 'done') ? 'bg-primary' : 'bg-border'
+                }`} />
             ))}
           </div>
         )}

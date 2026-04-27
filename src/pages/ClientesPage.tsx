@@ -13,6 +13,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from "@/lib/supabase";
 import { getEmpresaId } from "@/lib/getEmpresaId";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { isValidPhone } from '@/utils/phone';
 
 
 export function formatPhoneDisplay(phone?: string | null) {
@@ -81,11 +82,19 @@ export default function ClientesPage() {
     name: string;
     phone: string;
     email: string;
-    data_nascimento?: string | null;
+    data_nascimento: string;
   }) => {
+
+    if (!data.name || !data.phone || !data.email || !data.data_nascimento) {
+      notify.error(t('fillAllFields'));
+      return;
+    }
+    if (!isValidPhone(data.phone)) {
+      notify.error(t('phoneinvalid'));
+      return;
+    }
     try {
       const empresaId = await getEmpresaId();
-
       if (editingClient) {
         await supabase
           .from("clientes")
@@ -108,15 +117,11 @@ export default function ClientesPage() {
             data_nascimento: data.data_nascimento,
             empresa_id: empresaId
           });
-
         notify.success(t('clientAdded'));
       }
-
       await loadClients();
-
       setModalOpen(false);
       setEditingClient(null);
-
     } catch (err) {
       console.error(err);
       notify.error("Erro ao salvar cliente");
@@ -126,9 +131,7 @@ export default function ClientesPage() {
   // 🔥 DELETE
   const handleRemove = async (id: string, name: string) => {
     await supabase.from("clientes").delete().eq("id", id);
-
     notify.success(t('clientRemoved', { name }));
-
     await loadClients();
   };
 
@@ -136,10 +139,6 @@ export default function ClientesPage() {
     setEditingClient(id);
     setModalOpen(true);
   };
-
-  /*const editData = editingClient
-    ? clients.find(c => c.id === editingClient)
-    : undefined;*/
 
   const editData = editingClient
     ? (() => {
