@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import logo from '@/assets/logo.png';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -49,5 +50,20 @@ export default function AuthCallback() {
     handleUser();
   }, []);
 
-  return <p>Carregando...</p>;
+  //return <p>Carregando...</p>;
+
+  return (
+    <div className="h-screen flex items-center justify-center bg-background">
+      <div className="relative w-80 h-80 flex items-center justify-center">
+        {/* Spinner */}
+        <div className="absolute inset-0 border-4 border-gray-300 border-t-foreground rounded-full animate-spin" />
+        {/* Logo centralizada */}
+        <img
+          src={logo}
+          alt="Satelite"
+          className="w-64 h-64 object-contain"
+        />
+      </div>
+    </div>
+  );
 }
