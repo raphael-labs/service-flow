@@ -3,6 +3,7 @@ export const translations = {
     // General
     save: 'Salvar',
     cancel: 'Cancelar',
+    confirm: 'Confirmar',
     delete: 'Excluir',
     edit: 'Editar',
     actions: 'Ações',
@@ -214,6 +215,7 @@ export const translations = {
   en: {
     save: 'Save',
     cancel: 'Cancel',
+    confirm: 'Confirm',
     delete: 'Delete',
     edit: 'Edit',
     actions: 'Actions',
@@ -414,6 +416,7 @@ export const translations = {
   es: {
     save: 'Guardar',
     cancel: 'Cancelar',
+    confirm: 'Confirmar',
     delete: 'Eliminar',
     edit: 'Editar',
     actions: 'Acciones',
