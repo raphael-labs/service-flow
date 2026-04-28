@@ -115,7 +115,7 @@ export default function FloatingCancelAppointment() {
                         </button>
 
                         <h2 className="text-lg font-bold mb-4">
-                            {t('findYourAppointments')}
+                            {t('findAppointments')}
                         </h2>
 
                         {/* FORM */}
