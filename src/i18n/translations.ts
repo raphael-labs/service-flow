@@ -186,6 +186,12 @@ export const translations = {
     makeAnother: 'Fazer outro agendamento',
     business: 'Negócio',
     schedulingBooking: 'Agendando seu horário...',
+    cancelReason: 'Digite o motivo do cancelamento',
+    cancelAppointment: 'Cancelar agendamento',
+    findAppointments: 'Buscar agendamentos',
+    yourEmail: 'Seu email',
+    finding: 'Buscando...',
+    find: 'Buscar',
 
     // Appointment status
     confirmed: 'Confirmado',
@@ -196,6 +202,12 @@ export const translations = {
     // 404
     pageNotFound: 'Página não encontrada',
     returnHome: 'Voltar ao início',
+
+    //error messages
+    errorCompanyNotFound: 'Erro: Empresa não encontrada',
+    errorSearch: 'Erro ao buscar',
+    errorFindingAppointments: 'Erro ao buscar agendamentos',
+    errorCancelingAppointment: 'Erro ao cancelar agendamento',
   },
 
   en: {
@@ -375,6 +387,12 @@ export const translations = {
     makeAnother: 'Make another booking',
     business: 'Business',
     schedulingBooking: 'Scheduling your booking...',
+    cancelReason: 'Enter cancellation reason',
+    cancelAppointment: 'Cancel appointment',
+    findAppointments: 'Find appointments',
+    yourEmail: 'Your email',
+    finding: 'Finding...',
+    find: 'Find',
 
     confirmed: 'Confirmed',
     pending: 'Pending',
@@ -383,6 +401,12 @@ export const translations = {
 
     pageNotFound: 'Page not found',
     returnHome: 'Return to Home',
+
+    //error messages
+    errorCompanyNotFound: 'Error: Company not found',
+    errorSearch: 'Error searching',
+    errorFindingAppointments: 'Error finding appointments',
+    errorCancelingAppointment: 'Error canceling appointment',
   },
 
   es: {
@@ -562,6 +586,12 @@ export const translations = {
     makeAnother: 'Hacer otra reserva',
     business: 'Negocio',
     schedulingBooking: 'Agendando tu reserva...',
+    cancelReason: 'Ingrese el motivo de la cancelación',
+    cancelAppointment: 'Cancelar reserva',
+    findAppointments: 'Buscar citas',
+    yourEmail: 'Tu correo electrónico',
+    finding: 'Buscando...',
+    find: 'Buscar',
 
     confirmed: 'Confirmado',
     pending: 'Pendiente',
@@ -570,6 +600,12 @@ export const translations = {
 
     pageNotFound: 'Página no encontrada',
     returnHome: 'Volver al inicio',
+
+    //error messages
+    errorCompanyNotFound: 'Error: No se encontró la empresa',
+    errorSearch: 'Error al buscar',
+    errorFindingAppointments: 'Error al buscar citas',
+    errorCancelingAppointment: 'Error al cancelar la cita',
   },
 } as const;
 

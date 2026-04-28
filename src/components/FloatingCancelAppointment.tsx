@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trash2, X, Search } from 'lucide-react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Appointment {
     id: string;
@@ -16,13 +17,18 @@ export default function FloatingCancelAppointment() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(false);
     const { slug } = useParams();
+    const { t, locale } = useTranslation();
 
     // 🔍 BUSCAR AGENDAMENTOS
     const handleSearch = async () => {
-        if (!email || !birthDate) return alert('Preencha todos os campos');
+        if (!email || !birthDate) {
+            toast.error(t('fillAllFields'));
+            return;
+        }
 
         if (!slug) {
-            return alert('Erro: empresa não identificada');
+            toast.error(t('errorCompanyNotFound'));
+            return;
         }
 
         setLoading(true);
@@ -38,7 +44,7 @@ export default function FloatingCancelAppointment() {
 
             if (!res.ok) {
                 console.error(data);
-                alert(data.error || 'Erro ao buscar');
+                toast.error(t('errorSearch'));
                 return;
             }
 
@@ -49,7 +55,7 @@ export default function FloatingCancelAppointment() {
 
                 return {
                     id: a.id,
-                    serviceName: a.servicos?.name || 'Serviço',
+                    serviceName: a.servicos?.name || 'Service',
                     date: d.toLocaleDateString(),
                     time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 };
@@ -58,7 +64,7 @@ export default function FloatingCancelAppointment() {
             setAppointments(formatted);
         } catch (err) {
             console.error(err);
-            alert('Erro ao buscar agendamentos');
+            toast.error(t('errorFindingAppointments'));
         }
 
         setLoading(false);
@@ -66,7 +72,7 @@ export default function FloatingCancelAppointment() {
 
     // ❌ CANCELAR
     const handleCancel = async (id: string) => {
-        const reason = prompt('Digite o motivo do cancelamento:');
+        const reason = prompt(t('cancelReason'));
         if (!reason) return;
 
         try {
@@ -79,7 +85,7 @@ export default function FloatingCancelAppointment() {
             setAppointments(prev => prev.filter(a => a.id !== id));
         } catch (err) {
             console.error(err);
-            alert('Erro ao cancelar');
+            toast.error(t('errorCancelingAppointment'));
         }
     };
 
@@ -91,7 +97,7 @@ export default function FloatingCancelAppointment() {
                 className="fixed top-4 right-4 z-50 bg-destructive text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 hover:scale-105 transition"
             >
                 <Trash2 className="w-4 h-4" />
-                Cancelar agendamento
+                {t('cancelAppointment')}
             </button>
 
             {/* MODAL */}
@@ -108,14 +114,14 @@ export default function FloatingCancelAppointment() {
                         </button>
 
                         <h2 className="text-lg font-bold mb-4">
-                            Buscar agendamentos
+                            {t('findYourAppointments')}
                         </h2>
 
                         {/* FORM */}
                         <div className="space-y-3">
                             <input
                                 type="email"
-                                placeholder="Seu email"
+                                placeholder={t('yourEmail')}
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 className="w-full border rounded-lg px-3 py-2"
@@ -133,7 +139,7 @@ export default function FloatingCancelAppointment() {
                                 className="w-full bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2"
                             >
                                 <Search className="w-4 h-4" />
-                                {loading ? 'Buscando...' : 'Buscar'}
+                                {loading ? t('finding') : t('find')}
                             </button>
                         </div>
 
@@ -141,7 +147,7 @@ export default function FloatingCancelAppointment() {
                         <div className="mt-4 space-y-2 max-h-60 overflow-y-auto">
                             {appointments.length === 0 && !loading && (
                                 <p className="text-sm text-muted-foreground text-center">
-                                    Nenhum agendamento encontrado
+                                    {t('noAppointments')}
                                 </p>
                             )}
 
