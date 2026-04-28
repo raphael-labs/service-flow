@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Trash2, X, Search } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Appointment {
     id: string;
