@@ -67,7 +67,7 @@ export const useNotificationStore = create<Store>((set, get) => ({
         clientName: a.clientes?.name || '',
         date: dateObj.toLocaleDateString(),
         time: dateObj.toTimeString().slice(0, 5),
-        reason: a.motivo_cancelamento,
+        reason: a.motivo_cancel,
         createdAt: a.created_at,
         cancel_at: a.cancel_at,
       };
