@@ -192,6 +192,7 @@ export const translations = {
     yourEmail: 'Seu email',
     finding: 'Buscando...',
     find: 'Buscar',
+    appointmentCanceled: 'Agendamento cancelado',
 
     // Appointment status
     confirmed: 'Confirmado',
@@ -393,6 +394,7 @@ export const translations = {
     yourEmail: 'Your email',
     finding: 'Finding...',
     find: 'Find',
+    appointmentCanceled: 'Appointment canceled',
 
     confirmed: 'Confirmed',
     pending: 'Pending',
@@ -592,6 +594,7 @@ export const translations = {
     yourEmail: 'Tu correo electrónico',
     finding: 'Buscando...',
     find: 'Buscar',
+    appointmentCanceled: 'Reserva cancelada',
 
     confirmed: 'Confirmado',
     pending: 'Pendiente',

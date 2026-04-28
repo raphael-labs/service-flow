@@ -84,6 +84,7 @@ export default function FloatingCancelAppointment() {
             });
 
             setAppointments(prev => prev.filter(a => a.id !== id));
+            toast.success(t('appointmentCanceled'));
         } catch (err) {
             console.error(err);
             toast.error(t('errorCancelingAppointment'));
