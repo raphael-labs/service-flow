@@ -7,10 +7,11 @@ import FormInput from '@/components/FormInput';
 import FormSelect from '@/components/FormSelect';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Upload, X, Image, Check } from 'lucide-react';
+import { Upload, X, Image, Check, Pencil, CirclePower } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { getEmpresaId } from "@/lib/getEmpresaId";
 import { useEffect } from 'react';
+import { FormPhoneInput } from '@/components/FormPhoneInput';
 
 
 export default function ConfiguracoesPage() {
@@ -27,6 +28,8 @@ export default function ConfiguracoesPage() {
   const [email, setEmail] = useState(user?.email || '');
   const [address, setAddress] = useState(user?.address || '');
   const [slug, setSlug] = useState(user?.slug || '');
+  const [min_prev_hora, setMin_prev_hora] = useState(user?.min_prev_hora || '');
+  const [max_agenda_dias, setMax_agenda_dias] = useState(user?.max_agenda_dias || '');
 
   // 🔥 MAPA DE ESTILO (BANCO)
   const styleMap: Record<BookingStyle, number> = {
@@ -59,59 +62,6 @@ export default function ConfiguracoesPage() {
     '0': { active: false, start: '08:00', end: '18:00', slot: '30', simultaneo: '1' },
   });
 
-  /*useEffect(() => {
-    const loadData = async () => {
-      try {
-        const empresaId = await getEmpresaId();
-
-        const { data } = await supabase
-          .from("empresas")
-          .select("*")
-          .eq("id", empresaId)
-          .single();
-
-        if (!data) return;
-
-        // 🔥 preenche estados
-        setBusinessName(data.name || '');
-        setPhone(data.telefone || '');
-        setEmail(data.email || '');
-        setAddress(data.endereco || '');
-        setSlug(data.slug || '');
-
-        // idioma
-        if (data.idioma) setLanguage(data.idioma);
-
-        // imagens
-        if (data.path_img_logo) setLogo(data.path_img_logo);
-        if (data.path_img_bg) setExtraImage(data.path_img_bg);
-
-        // estilo
-        const reverseStyleMap: Record<number, BookingStyle> = {
-          1: 'classic',
-          2: 'minimal',
-          3: 'bold',
-          4: 'elegant',
-          5: 'compact',
-          6: 'glass',
-          7: 'playful',
-          8: 'corporate',
-          9: 'modern',
-          10: 'warm'
-        };
-
-        if (data.pg_estilo) {
-          setBookingStyle(reverseStyleMap[data.pg_estilo]);
-        }
-
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    loadData();
-  }, []);*/
-
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -131,6 +81,8 @@ export default function ConfiguracoesPage() {
         setEmail(data.email || '');
         setAddress(data.endereco || '');
         setSlug(data.slug || '');
+        setMin_prev_hora(data.min_prev_hora || '');
+        setMax_agenda_dias(data.max_agenda_dias || '');
 
         if (data.idioma) setLanguage(data.idioma);
 
@@ -228,7 +180,9 @@ export default function ConfiguracoesPage() {
           telefone: phone,
           email,
           endereco: address,
-          slug
+          slug,
+          min_prev_hora,
+          max_agenda_dias
         })
         .eq("id", empresaId);
 
@@ -372,9 +326,6 @@ export default function ConfiguracoesPage() {
         />
       </Card>
 
-      {/* IMAGENS */}
-
-
       {/* Business Images */}
       <Card>
         <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('businessImages')}</h2>
@@ -505,16 +456,26 @@ export default function ConfiguracoesPage() {
 
       {/* BUSINESS INFO */}
       <Card>
+        <h2 className="text-base font-semibold font-heading text-foreground mb-4">Configurações Gerais</h2>
         <form onSubmit={handleSaveBusiness} className="space-y-4">
-          <FormInput label={t('companyName')} value={businessName} onChange={e => setBusinessName(e.target.value)} />
+          <FormInput required label={t('companyName')} value={businessName} onChange={e => setBusinessName(e.target.value)} />
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} />
-            <FormInput label={t('email')} value={email} onChange={e => setEmail(e.target.value)} />
+            <FormPhoneInput
+              label={t('phone')}
+              value={phone}
+              onChange={setPhone}
+            />
+            <FormInput required label={t('email')} value={email} onChange={e => setEmail(e.target.value)} />
           </div>
 
           <FormInput label={t('address')} value={address} onChange={e => setAddress(e.target.value)} />
-          <FormInput label='Slug' value={slug} onChange={e => setSlug(e.target.value)} />
+          <FormInput required label='Slug' value={slug} onChange={e => setSlug(e.target.value)} />
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <FormInput required type="number" min="0" label='Antecedencia minima (Horas)' value={min_prev_hora} onChange={e => setMin_prev_hora(e.target.value)} />
+            <FormInput required type="number" min="7" max="120"  label='Disponibilidade maxima (Dias)' value={max_agenda_dias} onChange={e => setMax_agenda_dias(e.target.value)} />
+          </div>
 
           <button className="btn-primary">{t('saveInfo')}</button>
         </form>
@@ -533,7 +494,7 @@ export default function ConfiguracoesPage() {
             </code>
             <button
               type="button"
-              onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/booking/${user?.slug}`); toast.success(t('linkCopied')); }}
+              onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/booking/${slug}`); toast.success(t('linkCopied')); }}
               className="btn-outline text-xs px-3 py-2 shrink-0"
             >
               {t('copy')}
@@ -548,20 +509,17 @@ export default function ConfiguracoesPage() {
 
             return (
               <div key={day.value} className="border p-3 rounded-lg space-y-2">
-
                 <div className="flex justify-between">
                   <span>{t(day.key)}</span>
-                  <button type="button" onClick={() => updateDay(day.value, 'active', !d.active)}>
-                    {d.active ? 'Ativo' : 'Inativo'}
+                  <button className="btn-outline text-xs px-3 py-2 shrink-0 flex items-center gap-1.5" type="button" onClick={() => updateDay(day.value, 'active', !d.active)}>
+                    <CirclePower className={`w-3.5 h-3.5 ${d.active ? 'text-green-500' : 'text-red-500'}`} /> {d.active ? 'Ativo' : 'Inativo'}
                   </button>
                 </div>
-
                 {d.active && (
                   <div className="grid sm:grid-cols-4 gap-3">
                     <FormInput label="Início" type="time" value={d.start} onChange={e => updateDay(day.value, 'start', e.target.value)} />
                     <FormInput label="Fim" type="time" value={d.end} onChange={e => updateDay(day.value, 'end', e.target.value)} />
                     <FormInput label="Slot (minutos)" type="number" value={d.slot} onChange={e => updateDay(day.value, 'slot', e.target.value)} />
-
                     <FormInput
                       label="Simultâneos"
                       type="number"
@@ -573,7 +531,6 @@ export default function ConfiguracoesPage() {
               </div>
             );
           })}
-
           <button className="btn-primary">{t('saveSchedule')}</button>
         </form>
       </Card>

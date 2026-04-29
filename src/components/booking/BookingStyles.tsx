@@ -2,6 +2,7 @@ import FormInput from '@/components/FormInput';
 import { Calendar, Clock, CheckCircle2, ArrowRight, ArrowLeft, Mail, Phone, MapPin } from 'lucide-react';
 import { formatCurrency, type MockService, type Step } from '@/hooks/useBookingLogic';
 import { FormPhoneInput } from '../FormPhoneInput';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 
 interface StyleProps {
@@ -37,6 +38,18 @@ interface StyleProps {
   locale: string;
 }
 
+export function formatPhoneDisplay(phone?: string | null) {
+  if (!phone) return '';
+
+  try {
+    const phoneNumber = parsePhoneNumberFromString(phone);
+    return phoneNumber ? phoneNumber.formatInternational() : phone;
+  } catch {
+    console.log('Error parsing phone number:', phone);
+    return phone;
+  }
+}
+
 // ========== SHARED HELPERS ==========
 const StepDots = ({ step, className = '' }: { step: Step; className?: string }) => {
   const steps: Step[] = ['service', 'datetime', 'info'];
@@ -46,8 +59,8 @@ const StepDots = ({ step, className = '' }: { step: Step; className?: string }) 
       {steps.map((s, i) => (
         <div key={s} className="flex items-center gap-2">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step === s ? 'bg-primary text-primary-foreground' :
-              (currentIdx > i || step === 'done') ? 'bg-primary/20 text-primary' :
-                'bg-secondary text-muted-foreground'
+            (currentIdx > i || step === 'done') ? 'bg-primary/20 text-primary' :
+              'bg-secondary text-muted-foreground'
             }`}>{i + 1}</div>
           {i < 2 && <div className="w-8 h-0.5 bg-border rounded" />}
         </div>
@@ -100,7 +113,7 @@ const BookingFooter = ({ businessEmail, businessPhone, businessAddress }: { busi
     <div className="border-t border-border mt-10 pt-6 pb-4">
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
         {businessPhone && (
-          <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{businessPhone}</span>
+          <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{formatPhoneDisplay(businessPhone)}</span>
         )}
         {businessEmail && (
           <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{businessEmail}</span>

@@ -198,7 +198,7 @@ export const translations = {
     // Appointment status
     confirmed: 'Confirmado',
     pending: 'Pendente',
-    created: 'Criado',
+    created: 'Agendado',
     cancelled: 'Cancelado',
 
     // 404
@@ -400,7 +400,7 @@ export const translations = {
 
     confirmed: 'Confirmed',
     pending: 'Pending',
-    created: 'Created',
+    created: 'Scheduled',
     cancelled: 'Cancelled',
 
     pageNotFound: 'Page not found',
@@ -601,7 +601,7 @@ export const translations = {
 
     confirmed: 'Confirmado',
     pending: 'Pendiente',
-    created: 'Creado',
+    created: 'Programado',
     cancelled: 'Cancelado',
 
     pageNotFound: 'Página no encontrada',

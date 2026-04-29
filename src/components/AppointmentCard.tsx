@@ -18,6 +18,7 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
 
   const clientName = appointment.clientes?.name || 'Sem cliente';
   const serviceName = appointment.servicos?.name || 'Sem serviço';
+  const motivoCancel = appointment.motivo_cancel || null;
   const duration = appointment.servicos?.duracao || 0;
 
   // 🔥 status simples baseado no banco
@@ -47,7 +48,7 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
   return (
     <div
       onClick={onClick}
-      className="card-elevated p-3.5 cursor-pointer hover:border-primary/30 transition-all group"
+      className="card-elevated p-3.5 hover:border-primary/30 transition-all group"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
@@ -66,6 +67,13 @@ export default function AppointmentCard({ appointment, onClick }: AppointmentCar
               {time} · {duration}min
             </span>
           </div>
+
+          {motivoCancel && (
+            <p className="text-xs text-red-500 mt-1">
+              Motivo: {motivoCancel}
+            </p>
+          )}
+
         </div>
 
         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[status]}`}>
