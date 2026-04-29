@@ -3,6 +3,7 @@ import { Trash2, X, Search } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import FormInput from './FormInput';
 
 interface Appointment {
     id: string;
@@ -64,23 +65,6 @@ export default function FloatingCancelAppointment() {
     };
 
     // ❌ CANCELAR
-    /*const handleCancel = async (id: string) => {
-        const reason = prompt(t('cancelReason'));
-        if (!reason) return;
-        try {
-            await fetch('/api/cancel-appointment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ agendamento_id: id, motivo: reason }),
-            });
-            setAppointments(prev => prev.filter(a => a.id !== id));
-            toast.success(t('appointmentCanceled'));
-        } catch (err) {
-            console.error(err);
-            toast.error(t('errorCancelingAppointment'));
-        }
-    };*/
-
     const handleCancelClick = (id: string) => {
         setCancelId(id);
         setCancelReason('');
@@ -138,6 +122,20 @@ export default function FloatingCancelAppointment() {
                         </h2>
                         {/* FORM */}
                         <div className="space-y-3">
+                            <FormInput
+                                label={t('email')}
+                                type="email"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                required
+                            />
+                            <FormInput
+                                label={t('birthDate')}
+                                type="date"
+                                value={birthDate}
+                                onChange={e => setBirthDate(e.target.value)}
+                                required
+                            />
                             <input
                                 type="email"
                                 placeholder={t('yourEmail')}

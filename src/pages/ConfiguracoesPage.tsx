@@ -14,6 +14,25 @@ import { useEffect } from 'react';
 import { FormPhoneInput } from '@/components/FormPhoneInput';
 
 
+export function validatePassword(password: string) {
+  const minLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+  return {
+    valid: minLength && hasUpper && hasLower && hasNumber && hasSpecial,
+    errors: {
+      minLength,
+      hasUpper,
+      hasLower,
+      hasNumber,
+      hasSpecial,
+    },
+  };
+}
+
 export default function ConfiguracoesPage() {
   const user = useAuthStore(s => s.user);
   const { language, setLanguage } = useLanguageStore();
@@ -30,6 +49,13 @@ export default function ConfiguracoesPage() {
   const [slug, setSlug] = useState(user?.slug || '');
   const [min_prev_hora, setMin_prev_hora] = useState(user?.min_prev_hora || '');
   const [max_agenda_dias, setMax_agenda_dias] = useState(user?.max_agenda_dias || '');
+
+  const [userName, setUserName] = useState(user?.name || '');
+  const [userEmail, setUserEmail] = useState(user?.email || '');
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // 🔥 MAPA DE ESTILO (BANCO)
   const styleMap: Record<BookingStyle, number> = {
@@ -66,6 +92,7 @@ export default function ConfiguracoesPage() {
     const loadData = async () => {
       try {
         const empresaId = await getEmpresaId();
+
 
         // 🔥 EMPRESA
         const { data } = await supabase
@@ -142,8 +169,25 @@ export default function ConfiguracoesPage() {
         console.error(err);
       }
     };
-
+    const loadUserProfile = async () => {
+      try {
+        const user = useAuthStore.getState().user;
+        if (!user?.id) return;
+        const { data, error } = await supabase
+          .from("usuarios")
+          .select("name")
+          .eq("user_id", user.id)
+          .single();
+        if (error) throw error;
+        if (data) {
+          setUserName(data.name);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
     loadData();
+    loadUserProfile();
   }, []);
 
   const dayKeys = [
@@ -164,6 +208,182 @@ export default function ConfiguracoesPage() {
         [field]: value
       }
     }));
+  };
+
+  //salvar perfil
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      /*
+
+      const user = useAuthStore.getState().user;
+      // 🔹 atualizar nome e email
+      const { error: updateError } = await supabase.auth.updateUser({
+        email: userEmail,
+      });
+
+      const { error: updateUsuarioError } = await supabase
+        .from("usuarios")
+        .update({
+          name: userName, // estado do input
+        })
+        .eq("user_id", user.id);
+
+      if (updateError) throw updateError;
+      if (updateUsuarioError) throw updateUsuarioError;
+
+      useAuthStore.setState({
+        user: {
+          ...user,
+          name: userName
+        }
+      });
+
+      // 🔹 alterar senha (se preenchido)
+      if (newPassword || confirmPassword || currentPassword) {
+
+        if (!currentPassword) {
+          toast.error('Digite a senha atual');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          toast.error('As senhas não coincidem');
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          toast.error('Senha deve ter pelo menos 8 caracteres');
+          return;
+        }
+
+        const result = validatePassword(newPassword);
+        if (!result.valid) {
+          const errors = [];
+
+          if (!result.errors.minLength) errors.push("mínimo 8 caracteres");
+          if (!result.errors.hasUpper) errors.push("letra maiúscula");
+          if (!result.errors.hasLower) errors.push("letra minúscula");
+          if (!result.errors.hasNumber) errors.push("número");
+          if (!result.errors.hasSpecial) errors.push("caractere especial");
+
+          toast.error(`Senha precisa ter: ${errors.join(', ')}`);
+          return;
+        }
+
+        // 🔥 reautenticar (IMPORTANTE no Supabase)
+        const { error: reauthError } = await supabase.auth.signInWithPassword({
+          email: userEmail,
+          password: currentPassword
+        });
+
+        if (reauthError) {
+          toast.error('Senha atual incorreta');
+          return;
+        }
+
+        // 🔥 atualizar senha
+        const { error: passError } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (passError) throw passError;
+      }
+
+      toast.success('Perfil atualizado com sucesso');
+
+      // limpa campos de senha
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+
+
+    */
+
+      const user = useAuthStore.getState().user;
+
+      // validar nome
+      if (!userName.trim()) {
+        toast.error('Nome não pode ser vazio');
+        return;
+      }
+
+      // 🔐 troca de senha (se necessário)
+      const isChangingPassword = currentPassword || newPassword || confirmPassword;
+
+      if (isChangingPassword) {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          toast.error('Preencha todos os campos de senha');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          toast.error('As senhas não coincidem');
+          return;
+        }
+
+        const result = validatePassword(newPassword);
+        if (!result.valid) {
+          const errors = [];
+
+          if (!result.errors.minLength) errors.push("mínimo 8 caracteres");
+          if (!result.errors.hasUpper) errors.push("letra maiúscula");
+          if (!result.errors.hasLower) errors.push("letra minúscula");
+          if (!result.errors.hasNumber) errors.push("número");
+          if (!result.errors.hasSpecial) errors.push("caractere especial");
+
+          toast.error(`Senha precisa ter: ${errors.join(', ')}`);
+          return;
+        }
+
+        // 🔥 reauth com email atual
+        const { error: reauthError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword
+        });
+
+        if (reauthError) {
+          toast.error('Senha atual incorreta');
+          return;
+        }
+
+        const { error: passError } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (passError) throw passError;
+      }
+
+      // 🔹 atualizar email (se mudou)
+      console.log("User email:", user.email);
+      console.log("Input email:", userEmail);
+      if (userEmail !== user.email) {
+        const { error } = await supabase.auth.updateUser({ email: userEmail });
+        if (error) throw error;
+      }
+
+      // 🔹 atualizar nome
+      await supabase
+        .from("usuarios")
+        .update({ name: userName })
+        .eq("user_id", user.id);
+        
+      // 🔹 atualizar store
+      useAuthStore.setState({
+        user: {
+          ...user,
+          name: userName,
+          email: userEmail
+        }
+      }); //testar
+
+      toast.success('Perfil atualizado com sucesso');
+
+    } catch (err) {
+      console.error(err);
+      toast.error('Erro ao atualizar perfil');
+    }
   };
 
   // 🔥 SALVAR EMPRESA
@@ -326,6 +546,62 @@ export default function ConfiguracoesPage() {
         />
       </Card>
 
+      {/* PROFILE */}
+      <Card>
+        <h2 className="text-base font-semibold font-heading text-foreground mb-4">
+          Perfil
+        </h2>
+
+        <form onSubmit={handleSaveProfile} className="space-y-4">
+
+          <FormInput
+            label="Nome do usuário"
+            value={userName}
+            onChange={e => setUserName(e.target.value)}
+            required
+          />
+
+          <FormInput
+            label="Email de login"
+            type="email"
+            value={userEmail}
+            onChange={e => setUserEmail(e.target.value)}
+            required
+          />
+
+          <div className="border-t border-border pt-4 space-y-4">
+            <p className="text-sm font-medium text-foreground">
+              Alterar senha
+            </p>
+
+            <FormInput
+              label="Senha atual"
+              type="password"
+              value={currentPassword}
+              onChange={e => setCurrentPassword(e.target.value)}
+            />
+
+            <FormInput
+              label="Nova senha"
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+            />
+
+            <FormInput
+              label="Confirmar nova senha"
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          <button className="btn-primary">
+            Salvar perfil
+          </button>
+        </form>
+      </Card>
+
       {/* Business Images */}
       <Card>
         <h2 className="text-base font-semibold font-heading text-foreground mb-4">{t('businessImages')}</h2>
@@ -470,7 +746,7 @@ export default function ConfiguracoesPage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <FormInput required type="number" min="0" label='Antecedencia minima (Horas)' value={min_prev_hora} onChange={e => setMin_prev_hora(e.target.value)} />
-            <FormInput required type="number" min="7" max="120"  label='Disponibilidade maxima (Dias)' value={max_agenda_dias} onChange={e => setMax_agenda_dias(e.target.value)} />
+            <FormInput required type="number" min="7" max="120" label='Disponibilidade maxima (Dias)' value={max_agenda_dias} onChange={e => setMax_agenda_dias(e.target.value)} />
           </div>
 
           <button className="btn-primary">{t('saveInfo')}</button>
