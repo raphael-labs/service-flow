@@ -113,7 +113,7 @@ const BookingFooter = ({ businessEmail, businessPhone, businessAddress }: { busi
     <div className="border-t border-border mt-10 pt-6 pb-4">
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
         {businessPhone && (
-          <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{formatPhoneDisplay(businessPhone)}</span>
+          <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{businessPhone}</span>
         )}
         {businessEmail && (
           <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{businessEmail}</span>

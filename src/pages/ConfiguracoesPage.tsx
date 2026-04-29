@@ -461,12 +461,8 @@ export default function ConfiguracoesPage() {
           <FormInput required label={t('companyName')} value={businessName} onChange={e => setBusinessName(e.target.value)} />
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <FormPhoneInput
-              label={t('phone')}
-              value={phone}
-              onChange={setPhone}
-            />
-            <FormInput required label={t('email')} value={email} onChange={e => setEmail(e.target.value)} />
+            <FormInput label={t('phone')} value={phone} onChange={e => setPhone(e.target.value)} />
+            <FormInput label={t('email')} value={email} onChange={e => setEmail(e.target.value)} />
           </div>
 
           <FormInput label={t('address')} value={address} onChange={e => setAddress(e.target.value)} />
