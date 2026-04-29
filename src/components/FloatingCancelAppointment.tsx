@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
 import FormInput from './FormInput';
+import FormTextarea from './FormTextarea';
 
 interface Appointment {
     id: string;
@@ -136,19 +137,6 @@ export default function FloatingCancelAppointment() {
                                 onChange={e => setBirthDate(e.target.value)}
                                 required
                             />
-                            <input
-                                type="email"
-                                placeholder={t('yourEmail')}
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                className="w-full border rounded-lg px-3 py-2"
-                            />
-                            <input
-                                type="date"
-                                value={birthDate}
-                                onChange={e => setBirthDate(e.target.value)}
-                                className="w-full border rounded-lg px-3 py-2"
-                            />
                             <button
                                 onClick={handleSearch}
                                 className="w-full bg-primary text-white py-2 rounded-lg flex items-center justify-center gap-2"
@@ -193,11 +181,11 @@ export default function FloatingCancelAppointment() {
                         <h3 className="text-lg font-semibold mb-3">
                             {t('cancelAppointment')}
                         </h3>
-                        <textarea
+                        <FormTextarea
+                            label={t('cancelReason')}
                             value={cancelReason}
                             onChange={e => setCancelReason(e.target.value)}
                             placeholder={t('cancelReason')}
-                            className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px]"
                         />
                         <div className="flex justify-end gap-2 mt-4">
                             <button
